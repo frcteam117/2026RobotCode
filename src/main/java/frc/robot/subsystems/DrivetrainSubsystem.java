@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,14 +14,17 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Swerve.SwerveModule;
+import frc.robot.Swerve.SwerveModuleSimulation;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.generated.SwerveConstants.ModuleConstants;
 import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Represents a swerve drive style drivetrain. */
-public class Drivetrain extends SubsystemBase {
+public class DrivetrainSubsystem extends SubsystemBase {
     public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
+    private Rotation2d zeroRotation = Rotation2d.kZero;
 
     private final SwerveModule m_frontLeft = new SwerveModule(
             ModuleConstants.FRONT_LEFT_DRIVE_MOTOR_ID,
@@ -63,6 +66,11 @@ public class Drivetrain extends SubsystemBase {
             ModuleConstants.BACK_RIGHT_DRIVE_MOTOR_INVERTED,
             ModuleConstants.BACK_RIGHT_AZIMUTH_MOTOR_INVERTED);
 
+    private final SwerveModuleSimulation m_frontLeftSim = new SwerveModuleSimulation();
+    private final SwerveModuleSimulation m_frontRightSim = new SwerveModuleSimulation();
+    private final SwerveModuleSimulation m_backLeftSim = new SwerveModuleSimulation();
+    private final SwerveModuleSimulation m_backRightSim = new SwerveModuleSimulation();
+    
     private final Supplier<Rotation2d> m_gyroSupplier;
 
     private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -82,7 +90,7 @@ public class Drivetrain extends SubsystemBase {
      *                     as Rotation2d
      * @param initialPose  The initial pose of the robot
      */
-    public Drivetrain(Supplier<Rotation2d> gyroSupplier, Pose2d initialPose) {
+    public DrivetrainSubsystem(Supplier<Rotation2d> gyroSupplier, Pose2d initialPose) {
         this.m_gyroSupplier = gyroSupplier;
 
         m_odometry = new SwerveDriveOdometry(
@@ -108,7 +116,7 @@ public class Drivetrain extends SubsystemBase {
      */
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
         ChassisSpeeds speeds = fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyroSupplier.get())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyroSupplier.get().unaryMinus().minus(zeroRotation))
                 : new ChassisSpeeds(xSpeed, ySpeed, rot);
 
         var swerveModuleStates = m_kinematics.toSwerveModuleStates(
@@ -131,6 +139,18 @@ public class Drivetrain extends SubsystemBase {
         m_backLeft.setDesiredState(swerveModuleStates[2]);
         m_backRight.setDesiredState(swerveModuleStates[3]);
     }
+
+    public void updateSimModules() {
+        // SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.TOP_SPEED_METERS_PER_SEC);
+        if (!(m_frontLeftSim.mapleSimModule == null)) {
+            m_frontLeftSim.updateStateAndPosition(this.m_frontLeft.getSwerveState());}
+        if (!(m_frontRightSim.mapleSimModule == null)) {
+            m_frontRightSim.updateStateAndPosition(this.m_frontRight.getSwerveState());}
+        if (!(m_backLeftSim.mapleSimModule == null)) {
+            m_backLeftSim.updateStateAndPosition(this.m_backLeft.getSwerveState());}
+        if (!(m_backRightSim.mapleSimModule == null)) {
+            m_backRightSim.updateStateAndPosition(this.m_backRight.getSwerveState());}
+    } 
 
     /** Updates the field relative position of the robot. */
     public void updateOdometry() {
@@ -197,6 +217,10 @@ public class Drivetrain extends SubsystemBase {
                 m_backRight.getSwerveState());
     }
 
+    //
+    public void resetFieldRelativeDirection() {
+        zeroRotation = m_gyroSupplier.get().unaryMinus();
+    }
     /**
      * Should be called periodically to update odometry and SmartDashboard
      */

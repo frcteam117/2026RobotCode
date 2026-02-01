@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.generated.SwerveConstants;
-
+import frc.robot.subsystems.*;
 public class RobotContainer {
 
   // Driver controller
@@ -20,7 +20,7 @@ public class RobotContainer {
           SwerveConstants.GyroConstants.GYRO_PARAMS);
 
   // Swerve drivetrain subsystem
-  private final Drivetrain m_swerve = new Drivetrain(m_gyro::getRotation2d, new Pose2d());
+  private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(m_gyro::getRotation2d, new Pose2d());
   // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
@@ -66,7 +66,7 @@ public class RobotContainer {
               final var rot =
                   -m_rotLimiter.calculate(
                           MathUtil.applyDeadband(m_controller.getRightX(), 0.05))
-                      * Drivetrain.kMaxAngularSpeed;
+                      * DrivetrainSubsystem.kMaxAngularSpeed;
 
               // Command the drivetrain. 0.02 is the nominal TimedRobot loop period (20 ms).
               m_swerve.drive(xSpeed, ySpeed, rot, true, 0.02);
@@ -82,7 +82,7 @@ public class RobotContainer {
   }
 
   // Optional: expose drivetrain / controller if you need them elsewhere
-  public Drivetrain getDrivetrain() {
+  public DrivetrainSubsystem getDrivetrain() {
     return m_swerve;
   }
 
