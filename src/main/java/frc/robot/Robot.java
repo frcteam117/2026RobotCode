@@ -60,6 +60,7 @@ public class Robot extends TimedRobot {
   AHRS gyro = new AHRS(NavXComType.kUSB1);
   //
   private final PathUtil pathUtil = new PathUtil();
+  private final SubsystemCommands subsystemCommands = new SubsystemCommands();
 
   private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   //private final DrivetrainSubsystem m_swerve = SubsystemCommands.drivetrainSubsystem;//new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
@@ -72,6 +73,7 @@ public class Robot extends TimedRobot {
   private Rotation2d zeroRotation = Rotation2d.kZero;
   public final PhotonCamera camera0; // needs callibrated
   public final PhotonCamera camera2;
+  public List<List<PhotonPipelineResult>> curCameraResults;
   Timer timer;
   //Timer timer = new Timer();
   AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
@@ -99,6 +101,7 @@ public class Robot extends TimedRobot {
   int totalPathSteps = 0;
 
   Command curPathCommand;
+
   //
   
   //
@@ -123,7 +126,11 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("tagPose X",tagPose.getX());
         //AprilTagPoses.add(tagPose);
     }
-        
+    
+    //
+    
+
+
     //SmartDashboard.putNumber("AprilTag field pose - X",AprilTagPoses.get(1).getX());
   
   }
@@ -141,7 +148,7 @@ public class Robot extends TimedRobot {
     targetVisible = true;
         // Read in relevant data from the Camera
         var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
-
+        curCameraResults = results;
         for (int i = 0; i < results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
             // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
             if (!results.get(i).isEmpty()) {// Camera processed a new frame since last

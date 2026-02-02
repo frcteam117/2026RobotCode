@@ -15,7 +15,7 @@ public final class Main {
   private Main() {}
   // tests
 
-  /**
+  /*
    * Main initialization function. Do not perform any initialization here.
    *
    * <p>If you change your main robot class, change the parameter type.
@@ -24,3 +24,6 @@ public final class Main {
     RobotBase.startRobot(Robot::new);
   }
 }
+// TO DO:
+// consolodate all vision/camera functions into VisionSubsystem, and just run the camera/get results commands from in there!! (also
+//- that means that Robot.java doesn't need to house the camera functions :) )

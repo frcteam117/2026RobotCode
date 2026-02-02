@@ -91,6 +91,9 @@ public class SubsystemCommands {
   private static final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   private static final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(1);
   private static final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(9); // import these from robot for better continuity?
+  //
+//public Pose2d robotPose2d = new Pose2d();
+  //Pose2d robotPose2d = subsystemCommands.GetStartPoseFromVisibleAprilTags(null);
   //================
   AHRS gyro = new AHRS(NavXComType.kUSB1);
   //===
