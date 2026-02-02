@@ -91,7 +91,7 @@ public final class SwerveConstants {
         public static final boolean BACK_RIGHT_ANALOG_ENCODER_INVERTED = false;
 
         // Selected encoder type
-        public static final EncoderType ENCODER_SELECTED = EncoderType.THRIFTY_ABSOLUTE_ENCODER;
+        public static final EncoderType ENCODER_SELECTED = EncoderType.THRIFTY_10PIN_ENCODER;
         public static final double ENCODER_TICKS_PER_ROTATION = 4096;
     }
     
