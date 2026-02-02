@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogEncoder;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.generated.SwerveConstants.ModuleConstants;
@@ -26,8 +27,8 @@ public class SwerveModule {
     private final ThriftyNova m_driveMotor;
     private final ThriftyNova m_azimuthMotor;
 
-    // Encoder (only used for Thrifty absolute encoder)
-    private final AnalogEncoder m_thriftyEncoder;
+    // Encoder (only used for Thrifty 10 pin encoder) // ???
+    //private final DutyCycleEncoder m_thriftyEncoder;
 
     // Encoder configuration
     private final double m_encoderTicksPerRevolution;
@@ -54,7 +55,7 @@ public class SwerveModule {
     private static final double DRIVE_TICKS_TO_METERS = (SwerveConstants.WHEEL_DIAMETER_METERS * Math.PI)
             / (NEO_ENCODER_TICKS_PER_REV * SwerveConstants.DRIVE_GEAR_RATIO);
 
-    public SwerveModule(int driveMotorId, int azimuthMotorId, int encoderPort,
+    public SwerveModule(int driveMotorId, int azimuthMotorId,
             double encoderTicksPerRevolution, double encoderOffsetTicks, String moduleName,
             boolean driveInverted, boolean azimuthInverted) {
 
@@ -67,7 +68,7 @@ public class SwerveModule {
         m_driveMotor = new ThriftyNova(driveMotorId, MotorType.NEO);
         m_azimuthMotor = new ThriftyNova(azimuthMotorId, MotorType.NEO);
         // Set full range and expected zero so ticks map 1:1 with the configured encoder
-        m_thriftyEncoder = new AnalogEncoder(encoderPort, m_encoderTicksPerRevolution, 0.0);
+        //m_thriftyEncoder = new DutyCycleEncoder(azimuthMotorId); 
 
         configureDriveMotor();
         configureAzimuthMotor();
@@ -182,7 +183,7 @@ public class SwerveModule {
     private double getRawEncoderTicks() {
         double raw;
         if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            raw = m_thriftyEncoder.get();
+            raw = 0.0;
         } else {
             raw = m_azimuthMotor.getPositionAbs() * m_encoderTicksPerRevolution;
         }

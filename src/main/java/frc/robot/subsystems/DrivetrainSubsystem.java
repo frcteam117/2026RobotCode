@@ -29,7 +29,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModule m_frontLeft = new SwerveModule(
             ModuleConstants.FRONT_LEFT_DRIVE_MOTOR_ID,
             ModuleConstants.FRONT_LEFT_AZIMUTH_MOTOR_ID,
-            0,
             ModuleConstants.ENCODER_TICKS_PER_ROTATION,
             ModuleConstants.FRONT_LEFT_ENCODER_OFFSET,
             "Front Left",
@@ -39,7 +38,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModule m_frontRight = new SwerveModule(
             ModuleConstants.FRONT_RIGHT_DRIVE_MOTOR_ID,
             ModuleConstants.FRONT_RIGHT_AZIMUTH_MOTOR_ID,
-            1,
             ModuleConstants.ENCODER_TICKS_PER_ROTATION,
             ModuleConstants.FRONT_RIGHT_ENCODER_OFFSET,
             "Front Right",
@@ -49,7 +47,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModule m_backLeft = new SwerveModule(
             ModuleConstants.BACK_LEFT_DRIVE_MOTOR_ID,
             ModuleConstants.BACK_LEFT_AZIMUTH_MOTOR_ID,
-            2,
             ModuleConstants.ENCODER_TICKS_PER_ROTATION,
             ModuleConstants.BACK_LEFT_ENCODER_OFFSET,
             "Back Left",
@@ -59,7 +56,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModule m_backRight = new SwerveModule(
             ModuleConstants.BACK_RIGHT_DRIVE_MOTOR_ID,
             ModuleConstants.BACK_RIGHT_AZIMUTH_MOTOR_ID,
-            3,
             ModuleConstants.ENCODER_TICKS_PER_ROTATION,
             ModuleConstants.BACK_RIGHT_ENCODER_OFFSET,
             "Back Right",
