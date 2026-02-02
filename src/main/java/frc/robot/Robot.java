@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.PathUtil;
 import edu.wpi.first.math.util.Units;
 
@@ -60,6 +61,7 @@ public class Robot extends TimedRobot {
   AHRS gyro = new AHRS(NavXComType.kUSB1);
   //
   private final PathUtil pathUtil = new PathUtil();
+  private final VisionSubsystem visionSubsystem =  new VisionSubsystem();
   private final SubsystemCommands subsystemCommands = new SubsystemCommands();
 
   private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
@@ -73,7 +75,9 @@ public class Robot extends TimedRobot {
   private Rotation2d zeroRotation = Rotation2d.kZero;
   public final PhotonCamera camera0; // needs callibrated
   public final PhotonCamera camera2;
-  public List<List<PhotonPipelineResult>> curCameraResults;
+  public record cameraData = visionSubsystem.cameraData; // FIXXXXX
+
+  public cameraData curCameraResults;
   Timer timer;
   //Timer timer = new Timer();
   AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
@@ -145,41 +149,6 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     driveWithJoystick(false);
     m_swerve.updateOdometry();
-    targetVisible = true;
-        // Read in relevant data from the Camera
-        var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
-        curCameraResults = results;
-        for (int i = 0; i < results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
-            // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
-            if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
-                // Get the last one in the list.
-                var result = results.get(i).get(results.get(i).size() - 1);
-            // SmartDashboard.putNumber("Target tag ID", (result.getTargets().get(result.getTargets().size)-1));
-                SmartDashboard.putBoolean("result.hasTargets()", result.hasTargets());
-                if (result.hasTargets()) {
-                    // At least one AprilTag was seen by the camera - should be getting thru to here on/off but still yes
-                    for (var target : result.getTargets()) {
-                        if (aprilTagIDs.contains(target.getFiducialId())) { 
-                            // found one of the tags in aprilTagIDs
-                            curAprilTagID = target.getFiducialId();
-                            targetYaw = target.getYaw();
-                            targetVisible = true;
-                            SmartDashboard.putNumber("Target tag ID", curAprilTagID);
-                            SmartDashboard.putNumber("tag vis on camera #",i);
-                            System.out.println(target.getYaw());
-                            targetRange =
-                                        PhotonUtils.calculateDistanceToTargetMeters( // THESE NEED TO BE TUNED???
-                                                0.5   , // Measured with a tape measure, or in CAD.
-                                                1.435, // From 2024 game manual for ID 22, CHANGE IF U WANT TS TO WORK
-                                                Units.degreesToRadians(-30.0), // Measured with a protractor, or in CAD.
-                                                Units.degreesToRadians(target.getPitch()));
-                        }
-                    }
-                }
-            }
-            else {
-            }
-        }
   }
 
   @Override
@@ -237,44 +206,7 @@ public class Robot extends TimedRobot {
 
   private void driveWithJoystick(boolean fieldRelative) {
         //setSwerve(0,0,0, fieldRelative);
-        boolean targetVisible = true;
-        // Read in relevant data from the Camera
-        var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
-
-        for (int i = 0; i < results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
-            // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
-            if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
-                // Get the last one in the list.
-                var result = results.get(i).get(results.get(i).size() - 1);
-            // SmartDashboard.putNumber("Target tag ID", (result.getTargets().get(result.getTargets().size)-1));
-                SmartDashboard.putBoolean("result.hasTargets()", result.hasTargets());
-                if (result.hasTargets()) {
-                    // At least one AprilTag was seen by the camera - should be getting thru to here on/off but still yes
-                    for (var target : result.getTargets()) {
-                        if (aprilTagIDs.contains(target.getFiducialId())) { 
-                            // found one of the tags in aprilTagIDs
-                            curAprilTagID = target.getFiducialId();
-                            targetYaw = target.getYaw();
-                            targetVisible = true;
-                            SmartDashboard.putNumber("Target tag ID", curAprilTagID);
-                            SmartDashboard.putNumber("tag vis on camera #",i);
-                            System.out.println(target.getYaw());
-                            targetRange =
-                                        PhotonUtils.calculateDistanceToTargetMeters( // THESE NEED TO BE TUNED???
-                                                0.5   , // Measured with a tape measure, or in CAD.
-                                                1.435, // From 2024 game manual for ID 22, CHANGE IF U WANT TS TO WORK
-                                                Units.degreesToRadians(-30.0), // Measured with a protractor, or in CAD.
-                                                Units.degreesToRadians(target.getPitch()));
-                        }
-                    }
-                }
-            }
-            else {
-                //curAprilTagID = 0;
-                SmartDashboard.putNumber("Target tag ID", 0);
-                SmartDashboard.putNumber("tag vis on camera #",-1);
-            }
-        }
+        curCameraResults = visionSubsystem.getCameraResults();
 
 
         if (m_controller.getTriangleButton()) {
