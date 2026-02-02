@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.VisionSubsystem.cameraData;
 import frc.robot.util.PathUtil;
 import edu.wpi.first.math.util.Units;
 
@@ -50,21 +51,22 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
+import com.studica.frc.Navx;
 
 import org.photonvision.PhotonUtils;
 
 public class Robot extends TimedRobot {
   // private final XboxController m_controller = new XboxController(0);
   private final PS5Controller m_controller = new PS5Controller(0);
-  AHRS gyro = new AHRS(NavXComType.kUSB1);
+  private final Navx navX = new Navx(0, 100); // rate in Hz
+  //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
+  //inputs.yawPosition = navX.getRotation2d().unaryMinus();
   //
   private final PathUtil pathUtil = new PathUtil();
   private final VisionSubsystem visionSubsystem =  new VisionSubsystem();
   private final SubsystemCommands subsystemCommands = new SubsystemCommands();
 
-  private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
+  private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   //private final DrivetrainSubsystem m_swerve = SubsystemCommands.drivetrainSubsystem;//new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   private final SwerveModuleSimulation swerveModuleSim = new SwerveModuleSimulation();
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
@@ -75,7 +77,7 @@ public class Robot extends TimedRobot {
   private Rotation2d zeroRotation = Rotation2d.kZero;
   public final PhotonCamera camera0; // needs callibrated
   public final PhotonCamera camera2;
-  public record cameraData = visionSubsystem.cameraData; // FIXXXXX
+  //public record cameraData = visionSubsystem.cameraData; // FIXXXXX
 
   public cameraData curCameraResults;
   Timer timer;

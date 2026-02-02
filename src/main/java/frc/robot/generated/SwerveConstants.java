@@ -97,7 +97,7 @@ public final class SwerveConstants {
     
     // Gyro constants
     public static final class GyroConstants {
-        public static final GyroType GYRO_TYPE = GyroType.PIGEON2;//NAVX;
+        public static final GyroType GYRO_TYPE = GyroType.NAVX;//NAVX;
         public static final Object[] GYRO_PARAMS = new Object[] {}; // No parameters needed for NavX
 
     }

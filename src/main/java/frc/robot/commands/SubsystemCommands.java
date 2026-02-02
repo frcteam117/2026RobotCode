@@ -72,8 +72,7 @@ import java.util.function.Supplier;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
+import com.studica.frc.Navx;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -95,11 +94,11 @@ public class SubsystemCommands {
 //public Pose2d robotPose2d = new Pose2d();
   //Pose2d robotPose2d = subsystemCommands.GetStartPoseFromVisibleAprilTags(null);
   //================
-  AHRS gyro = new AHRS(NavXComType.kUSB1);
+  private final Navx navX = new Navx(0, 100);
   //===
     public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-    public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private static final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
+    public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private static final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
      public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
      public static final HoodSubsystem hoodSubsystem = new HoodSubsystem();
     public static final HopperSubsystem hopperSubsystem = new HopperSubsystem();
