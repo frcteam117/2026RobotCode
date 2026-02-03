@@ -96,15 +96,7 @@ public class SubsystemCommands {
   //================
   private final Navx navX = new Navx(0, 100);
   //===
-    public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-    public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private static final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
-     public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-     public static final HoodSubsystem hoodSubsystem = new HoodSubsystem();
-    public static final HopperSubsystem hopperSubsystem = new HopperSubsystem();
-    public static final KickerSubsystem kickerSubsystem = new KickerSubsystem();
-    //=====
-    static Optional<Alliance> alliance;
+  static Optional<Alliance> alliance;
     static Boolean alliancePresent = false;
 
     public SubsystemCommands() {
@@ -116,6 +108,18 @@ public class SubsystemCommands {
     }
     // if (alliance.get() ==  Alliance.[Red/Blue]) {
     //};
+  //
+    public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private static final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
+  /* 
+    public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+    
+     public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+     public static final HoodSubsystem hoodSubsystem = new HoodSubsystem();
+    public static final HopperSubsystem hopperSubsystem = new HopperSubsystem();
+    public static final KickerSubsystem kickerSubsystem = new KickerSubsystem();
+    //=====
+    
     
     
 
@@ -243,6 +247,7 @@ public class SubsystemCommands {
     }
     //public static Command ClimbLevel3() {
     //===
+    */
     public Pose2d GetStartPoseFromVisibleAprilTags(List<List<PhotonPipelineResult>> results) { // (only from start for now)
         //
         Pose2d robotPose = null;
@@ -278,6 +283,7 @@ public class SubsystemCommands {
                             //
                             
                             if (alliancePresent) {
+                                SmartDashboard.putBoolean("alliance present", true);
                                 if (alliance.get() == Alliance.Red) { // if on red side, add x,y,rot
                                     robotX = (drivetrainSubsystem.getPose().getX() + (targetRange*Math.sin(targetYaw)));
                                     robotY = (drivetrainSubsystem.getPose().getX() + (targetRange*Math.cos(targetYaw)));
@@ -288,6 +294,9 @@ public class SubsystemCommands {
                                     robotY = (drivetrainSubsystem.getPose().getX() - (targetRange*Math.cos(targetYaw)));
                                     robotHeading = Rotation2d.fromDegrees(180 - targetYaw);
                                 }
+                            }
+                            else {
+                                SmartDashboard.putBoolean("alliance present", false);
                             }
 
 

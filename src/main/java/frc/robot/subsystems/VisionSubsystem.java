@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.SubsystemCommands;
 
 public class VisionSubsystem {
     //
@@ -24,7 +25,7 @@ public class VisionSubsystem {
     //
     AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     public static List<Pose3d> AprilTagPoses;
-
+    private final SubsystemCommands subsystemCommands = new SubsystemCommands();
   //
     List<List<PhotonPipelineResult>> curCameraResults;
     //
@@ -58,6 +59,7 @@ public class VisionSubsystem {
     //
     public cameraData getCameraResults() {
         var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
+        subsystemCommands.GetStartPoseFromVisibleAprilTags(results);
         curAprilTagID = 0;
         targetYaw = 0.0;
         kPVision_Turn = 0.0;
@@ -88,6 +90,7 @@ public class VisionSubsystem {
                                                 1.435, // From 2024 game manual for ID 22, CHANGE IF U WANT TS TO WORK
                                                 Units.degreesToRadians(-30.0), // Measured with a protractor, or in CAD.
                                                 Units.degreesToRadians(target.getPitch()));
+                            
                         //}
                     }
                 }

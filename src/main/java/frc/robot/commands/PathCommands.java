@@ -286,8 +286,8 @@ public class PathCommands {
             }).until(() -> CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
             //
             Commands.runOnce(() -> { // shoots all fuel (runs both shooter for 5 sec, maybe add sensor input idk)
-                SubsystemCommands.RunLeftShooter();
-                SubsystemCommands.RunRightShooter();
+                //SubsystemCommands.RunLeftShooter();
+                //SubsystemCommands.RunRightShooter();
             }).withTimeout(5),
             //
             Commands.run(() -> { // drives to tower

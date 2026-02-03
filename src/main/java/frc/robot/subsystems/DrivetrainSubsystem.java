@@ -19,12 +19,12 @@ import frc.robot.Swerve.SwerveModuleSimulation;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.generated.SwerveConstants.ModuleConstants;
 import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Represents a swerve drive style drivetrain. */
 public class DrivetrainSubsystem extends SubsystemBase {
     public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
-    private Rotation2d zeroRotation = Rotation2d.kZero;
 
     private final SwerveModule m_frontLeft = new SwerveModule(
             ModuleConstants.FRONT_LEFT_DRIVE_MOTOR_ID,
@@ -66,7 +66,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModuleSimulation m_frontRightSim = new SwerveModuleSimulation();
     private final SwerveModuleSimulation m_backLeftSim = new SwerveModuleSimulation();
     private final SwerveModuleSimulation m_backRightSim = new SwerveModuleSimulation();
-    
+
     private final Supplier<Rotation2d> m_gyroSupplier;
 
     private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -112,7 +112,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
         ChassisSpeeds speeds = fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyroSupplier.get().unaryMinus().minus(zeroRotation))
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyroSupplier.get())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot);
 
         var swerveModuleStates = m_kinematics.toSwerveModuleStates(
@@ -146,7 +146,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_backLeftSim.updateStateAndPosition(this.m_backLeft.getSwerveState());}
         if (!(m_backRightSim.mapleSimModule == null)) {
             m_backRightSim.updateStateAndPosition(this.m_backRight.getSwerveState());}
-    } 
+    }
 
     /** Updates the field relative position of the robot. */
     public void updateOdometry() {
@@ -213,10 +213,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 m_backRight.getSwerveState());
     }
 
-    //
-    public void resetFieldRelativeDirection() {
-        zeroRotation = m_gyroSupplier.get().unaryMinus();
-    }
     /**
      * Should be called periodically to update odometry and SmartDashboard
      */
@@ -229,7 +225,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_frontRight.updateSmartDashboard();
         m_backLeft.updateSmartDashboard();
         m_backRight.updateSmartDashboard();
-        
 
         // Robot pose information
         Pose2d currentPose = getPose();
@@ -258,22 +253,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("BR Speed (m/s)", m_backRight.getSwerveState().speedMetersPerSecond);
         SmartDashboard.putNumber("BR Angle (deg)", m_backRight.getSwerveState().angle.getDegrees());
-
-        if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            m_frontLeft.updateAzimuth();
-            m_frontRight.updateAzimuth();
-            m_backLeft.updateAzimuth();
-            m_backRight.updateAzimuth();
-        }
         actualStatePublisher.set(
-            new SwerveModuleState[]{
-                m_frontLeft.getSwerveState(),
-                m_frontRight.getSwerveState(),
-                m_backLeft.getSwerveState(),
-                m_backRight.getSwerveState(),
-            }
+                    new SwerveModuleState[]{
+                        m_frontLeft.getSwerveState(),
+                        m_frontRight.getSwerveState(),
+                        m_backLeft.getSwerveState(),
+                        m_backRight.getSwerveState(),
+                    }
         );
-
         // Control buttons
         handleSmartDashboardButtons();
     }

@@ -161,7 +161,7 @@ public class Robot extends TimedRobot {
     //curRot = curPose.getRotation();
 
     if (m_controller.getSquareButtonPressed()) {
-        m_swerve.resetFieldRelativeDirection();
+        navX.resetYaw();
     }
 
     if (m_controller.getCrossButton()) {
@@ -225,6 +225,7 @@ public class Robot extends TimedRobot {
 
         // Auto-align when requested
         if (m_controller.getTriangleButton()) {
+            visionSubsystem.getCameraResults();
             SmartDashboard.putNumber("check #",1);
             fieldRelative = true;
             

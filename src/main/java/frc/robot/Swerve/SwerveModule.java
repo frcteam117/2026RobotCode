@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogEncoder;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.generated.SwerveConstants.ModuleConstants;
@@ -27,8 +26,8 @@ public class SwerveModule {
     private final ThriftyNova m_driveMotor;
     private final ThriftyNova m_azimuthMotor;
 
-    // Encoder (only used for Thrifty 10 pin encoder) // ???
-    //private final DutyCycleEncoder m_thriftyEncoder;
+    // Encoder (only used for Thrifty absolute encoder)
+    // private final AnalogEncoder m_thriftyEncoder;
 
     // Encoder configuration
     private final double m_encoderTicksPerRevolution;
@@ -40,10 +39,8 @@ public class SwerveModule {
     private final boolean m_driveInverted;
     private final boolean m_azimuthInverted;
 
-    private double m_currentAzimuthTarget;
-
     // PID controller for Thrifty encoder (RIO-side control)
-    private final PIDController m_turningPID = new PIDController(0.2, 0.0, 0.01);
+    private final PIDController m_turningPID = new PIDController(0.5, 0.0, 0.05);
     private Rotation2d m_desiredAngle = new Rotation2d();
 
     // (removed unused m_hasCheckedSavedOffset flag)
@@ -68,7 +65,7 @@ public class SwerveModule {
         m_driveMotor = new ThriftyNova(driveMotorId, MotorType.NEO);
         m_azimuthMotor = new ThriftyNova(azimuthMotorId, MotorType.NEO);
         // Set full range and expected zero so ticks map 1:1 with the configured encoder
-        //m_thriftyEncoder = new DutyCycleEncoder(azimuthMotorId); 
+       // m_thriftyEncoder = new AnalogEncoder(encoderPort, m_encoderTicksPerRevolution, 0.0);
 
         configureDriveMotor();
         configureAzimuthMotor();
@@ -84,7 +81,7 @@ public class SwerveModule {
      * Configure the drive motor with PID and feedforward
      */
     private void configureDriveMotor() {
-        // m_driveMotor.factoryReset();
+        m_driveMotor.factoryReset();
 
         // Configure drive PID and feedforward
         // PID tuned for rotation units instead of ticks (scaled up by NEO_ENCODER_TICKS_PER_REV = 42)
@@ -95,7 +92,7 @@ public class SwerveModule {
         double maxRevPerSec = estimatedMaxMps / (SwerveConstants.WHEEL_DIAMETER_METERS * Math.PI / SwerveConstants.DRIVE_GEAR_RATIO);
         m_driveMotor.pid0.setFF(1.0 / maxRevPerSec);
         m_driveMotor.usePIDSlot(PIDSlot.SLOT0);
-        m_driveMotor.setMaxOutput(0.2);
+        m_driveMotor.setMaxOutput(0.2); // TODO probably don't always want to limit this
         m_driveMotor.setInversion(m_driveInverted);
     }
 
@@ -103,6 +100,7 @@ public class SwerveModule {
      * Configure the azimuth motor based on encoder type
      */
     private void configureAzimuthMotor() {
+        m_azimuthMotor.factoryReset();
 
         switch (ModuleConstants.ENCODER_SELECTED) {
             case REDUX_ENCODER:
@@ -183,7 +181,7 @@ public class SwerveModule {
     private double getRawEncoderTicks() {
         double raw;
         if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            raw = 0.0;
+            throw new RuntimeException("WHY AM I IN HERE");
         } else {
             raw = m_azimuthMotor.getPositionAbs() * m_encoderTicksPerRevolution;
         }
@@ -256,7 +254,6 @@ public class SwerveModule {
     private void setAzimuthPosition(double targetAngleRadians) {
         if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
             double currentAngle = getEncoderPosition();
-            m_currentAzimuthTarget = targetAngleRadians;
             double output = m_turningPID.calculate(currentAngle, targetAngleRadians);
             m_azimuthMotor.set(output);
     } else {
@@ -265,15 +262,10 @@ public class SwerveModule {
         // Normalize to 0-1 range
         targetRotations = ((targetRotations % 1.0) + 1.0) % 1.0;
         // Log the target rotations
+        System.out.println("Target rotations: " + targetRotations);
         m_azimuthMotor.setPositionAbs(targetRotations);
     }
 }
-
-    public void updateAzimuth(){
-            double currentAngle = getEncoderPosition();
-            double output = m_turningPID.calculate(currentAngle, m_currentAzimuthTarget);
-            m_azimuthMotor.set(output);
-    }
 
     /**
      * Set current position as the new zero offset
@@ -345,6 +337,18 @@ public class SwerveModule {
         // Display drive motor info
         SmartDashboard.putNumber(m_moduleName + " Drive Velocity", getSwerveState().speedMetersPerSecond);
         SmartDashboard.putNumber(m_moduleName + " Drive Position", getSwervePosition().distanceMeters);
+
+        String driveErrors = "";
+        for (com.thethriftybot.devices.ThriftyNova.Error error : m_driveMotor.getErrors()) {
+            driveErrors += error.toString() +  ", ";
+        }
+        String azimuthErrors = "";
+        for (com.thethriftybot.devices.ThriftyNova.Error error : m_azimuthMotor.getErrors()) {
+            azimuthErrors += error.toString() +  ", ";
+        }
+
+        SmartDashboard.putString(m_moduleName + " drive errors", driveErrors);
+        SmartDashboard.putString(m_moduleName + " azimuth errors", azimuthErrors);
     }
 
     // Utility methods for unit conversions
