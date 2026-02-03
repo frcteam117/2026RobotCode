@@ -250,6 +250,7 @@ public class SubsystemCommands {
     */
     public Pose2d GetStartPoseFromVisibleAprilTags(List<List<PhotonPipelineResult>> results) { // (only from start for now)
         //
+        SmartDashboard.putNumber("visionCheck", 111);
         Pose2d robotPose = null;
         int curAprilTagID;
         double targetYaw;
@@ -261,12 +262,16 @@ public class SubsystemCommands {
             // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
             if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
                 // Get the last one in the list.
+                SmartDashboard.putNumber("visionCheck", 222);
                 var result = results.get(i).get(results.get(i).size() - 1);
+                SmartDashboard.putNumber("visionCheck", 222.5);
             // SmartDashboard.putNumber("Target tag ID", (result.getTargets().get(result.getTargets().size)-1));
                 SmartDashboard.putBoolean("result.hasTargets()", result.hasTargets());
-                if (result.hasTargets()) {
+                if (result.hasTargets()) { // PROBLEM HERE PROBLEM HERE PROBLEM HERE
+                    SmartDashboard.putNumber("visionCheck", 333);
                     // At least one AprilTag was seen by the camera - should be getting thru to here on/off but still yes
                     for (var target : result.getTargets()) {
+                        SmartDashboard.putNumber("visionCheck", 444);
                         //if (aprilTagIDs.contains(target.getFiducialId())) { 
                             // found one of the tags in aprilTagIDs
                             curAprilTagID = target.getFiducialId();
@@ -302,6 +307,9 @@ public class SubsystemCommands {
 
                             robotPose = new Pose2d(robotX, robotY, robotHeading);
                         }
+                    }
+                    else {
+                        SmartDashboard.putNumber("visionCheck", 555); // this is what is showing when it quits
                     }
                 //}
             }
