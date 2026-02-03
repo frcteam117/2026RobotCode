@@ -60,7 +60,7 @@ public class VisionSubsystem {
     public cameraData getCameraResults() {
         SmartDashboard.putNumber("visionCheck", 000);
         var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
-        subsystemCommands.GetStartPoseFromVisibleAprilTags(results);
+        //subsystemCommands.GetStartPoseFromVisibleAprilTags(results);
         curAprilTagID = 0;
         targetYaw = 0.0;
         kPVision_Turn = 0.0;

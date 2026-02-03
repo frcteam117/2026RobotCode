@@ -69,6 +69,7 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
@@ -94,6 +95,10 @@ public class SubsystemCommands {
 //public Pose2d robotPose2d = new Pose2d();
   //Pose2d robotPose2d = subsystemCommands.GetStartPoseFromVisibleAprilTags(null);
   //================
+  private Rotation2d zeroRotation = Rotation2d.kZero;
+  public final PhotonCamera camera0; // needs callibrated
+  public final PhotonCamera camera2;
+    //
   private final Navx navX = new Navx(0, 100);
   //===
   static Optional<Alliance> alliance;
@@ -105,6 +110,8 @@ public class SubsystemCommands {
                 alliancePresent = true;
             } else {
             }
+        camera0 = new PhotonCamera("PC_Camera0");
+        camera2 = new PhotonCamera("PC_Camera2");
     }
     // if (alliance.get() ==  Alliance.[Red/Blue]) {
     //};
@@ -248,8 +255,9 @@ public class SubsystemCommands {
     //public static Command ClimbLevel3() {
     //===
     */
-    public Pose2d GetStartPoseFromVisibleAprilTags(List<List<PhotonPipelineResult>> results) { // (only from start for now)
+    public Pose2d GetStartPoseFromVisibleAprilTags(){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         //
+        var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
         SmartDashboard.putNumber("visionCheck", 111);
         Pose2d robotPose = null;
         int curAprilTagID;
@@ -267,10 +275,13 @@ public class SubsystemCommands {
                 SmartDashboard.putNumber("visionCheck", 222.5);
             // SmartDashboard.putNumber("Target tag ID", (result.getTargets().get(result.getTargets().size)-1));
                 SmartDashboard.putBoolean("result.hasTargets()", result.hasTargets());
+                SmartDashboard.putString("camera result", result.toString());
                 if (result.hasTargets()) { // PROBLEM HERE PROBLEM HERE PROBLEM HERE
                     SmartDashboard.putNumber("visionCheck", 333);
+
                     // At least one AprilTag was seen by the camera - should be getting thru to here on/off but still yes
                     for (var target : result.getTargets()) {
+                        SmartDashboard.putString("camera result target(s)", target.toString());
                         SmartDashboard.putNumber("visionCheck", 444);
                         //if (aprilTagIDs.contains(target.getFiducialId())) { 
                             // found one of the tags in aprilTagIDs
