@@ -208,9 +208,9 @@ public class Robot extends TimedRobot {
 
   private void driveWithJoystick(boolean fieldRelative) {
         //setSwerve(0,0,0, fieldRelative);
-        curCameraResults = visionSubsystem.getCameraResults();
+        //curCameraResults = visionSubsystem.getCameraResults();
         if (m_controller.getCircleButton()) {
-            visionSubsystem.getCameraResults();
+            subsystemCommands.GetStartPoseFromVisibleAprilTags();
         }
 
         if (m_controller.getTriangleButton()) {

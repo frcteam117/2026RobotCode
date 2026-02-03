@@ -81,7 +81,7 @@ public class SwerveModule {
      * Configure the drive motor with PID and feedforward
      */
     private void configureDriveMotor() {
-        m_driveMotor.factoryReset();
+        // m_driveMotor.factoryReset();
 
         // Configure drive PID and feedforward
         // PID tuned for rotation units instead of ticks (scaled up by NEO_ENCODER_TICKS_PER_REV = 42)
@@ -100,7 +100,7 @@ public class SwerveModule {
      * Configure the azimuth motor based on encoder type
      */
     private void configureAzimuthMotor() {
-        m_azimuthMotor.factoryReset();
+        // m_azimuthMotor.factoryReset();
 
         switch (ModuleConstants.ENCODER_SELECTED) {
             case REDUX_ENCODER:
