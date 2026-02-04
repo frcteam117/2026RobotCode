@@ -57,7 +57,7 @@ public final class SwerveConstants {
         // Front Left Module
         public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 3;
         public static final int FRONT_LEFT_AZIMUTH_MOTOR_ID = 4;
-        public static final double FRONT_LEFT_ENCODER_OFFSET = 2741; // Encoder offset in ticks
+        public static final double FRONT_LEFT_ENCODER_OFFSET = 1354;//2661;//2741; // Encoder offset in ticks
         public static final boolean FRONT_LEFT_DRIVE_MOTOR_INVERTED = false;
         public static final boolean FRONT_LEFT_AZIMUTH_MOTOR_INVERTED = false;
         public static final int FRONT_LEFT_ANALOG_ENCODER_CHANNEL = 0;
@@ -66,7 +66,7 @@ public final class SwerveConstants {
         // Front Right Module
         public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 5;
         public static final int FRONT_RIGHT_AZIMUTH_MOTOR_ID = 6;
-        public static final double FRONT_RIGHT_ENCODER_OFFSET = 139; // Encoder offset in ticks
+        public static final double FRONT_RIGHT_ENCODER_OFFSET = 2095;//139; // Encoder offset in ticks
         public static final boolean FRONT_RIGHT_DRIVE_MOTOR_INVERTED = false;
         public static final boolean FRONT_RIGHT_AZIMUTH_MOTOR_INVERTED = false;
         public static final int FRONT_RIGHT_ANALOG_ENCODER_CHANNEL = 0;
@@ -75,7 +75,7 @@ public final class SwerveConstants {
         // Back Left Module
         public static final int BACK_LEFT_DRIVE_MOTOR_ID = 1;
         public static final int BACK_LEFT_AZIMUTH_MOTOR_ID = 2;
-        public static final double BACK_LEFT_ENCODER_OFFSET = 3170-2048; // Encoder offset in ticks
+        public static final double BACK_LEFT_ENCODER_OFFSET = 2559;//3170-2048; // Encoder offset in ticks
         public static final boolean BACK_LEFT_DRIVE_MOTOR_INVERTED = false;
         public static final boolean BACK_LEFT_AZIMUTH_MOTOR_INVERTED = false;
         public static final int BACK_LEFT_ANALOG_ENCODER_CHANNEL = 0;
@@ -84,7 +84,7 @@ public final class SwerveConstants {
         // Back Right Module
         public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 7;
         public static final int BACK_RIGHT_AZIMUTH_MOTOR_ID = 8;
-        public static final double BACK_RIGHT_ENCODER_OFFSET = 3794; // Encoder offset in ticks
+        public static final double BACK_RIGHT_ENCODER_OFFSET = 1823;//3794; // Encoder offset in ticks
         public static final boolean BACK_RIGHT_DRIVE_MOTOR_INVERTED = false;
         public static final boolean BACK_RIGHT_AZIMUTH_MOTOR_INVERTED = false;
         public static final int BACK_RIGHT_ANALOG_ENCODER_CHANNEL = 0;

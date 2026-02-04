@@ -43,6 +43,7 @@ import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 //
@@ -95,6 +96,7 @@ public class SubsystemCommands {
 //public Pose2d robotPose2d = new Pose2d();
   //Pose2d robotPose2d = subsystemCommands.GetStartPoseFromVisibleAprilTags(null);
   //================
+  //private final VisionSubsystem visionSubsystem = new VisionSubsystem();
   private Rotation2d zeroRotation = Rotation2d.kZero;
   public final PhotonCamera camera0; // needs callibrated
   public final PhotonCamera camera2;

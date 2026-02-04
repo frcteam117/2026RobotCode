@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.generated.SwerveConstants.ModuleConstants;
+import frc.robot.util.logging.LogUtil;
 
 public class SwerveModule {
     // Motors
@@ -40,7 +41,7 @@ public class SwerveModule {
     private final boolean m_azimuthInverted;
 
     // PID controller for Thrifty encoder (RIO-side control)
-    private final PIDController m_turningPID = new PIDController(0.5, 0.0, 0.05);
+    private final PIDController m_turningPID = new PIDController(0.3, 0.0, 0.0);
     private Rotation2d m_desiredAngle = new Rotation2d();
 
     // (removed unused m_hasCheckedSavedOffset flag)
@@ -73,6 +74,7 @@ public class SwerveModule {
 
         // Configure turning PID for continuous input (-180 to 180 degrees)
         m_turningPID.enableContinuousInput(-Math.PI, Math.PI);
+        // LogUtil.createTunablePID("Drive/TurningPID/", m_turningPID, () -> true);
 
         System.out.println(m_moduleName + " module initialized successfully");
     }
@@ -132,11 +134,12 @@ public class SwerveModule {
             case THRIFTY_10PIN_ENCODER:
                 m_azimuthMotor.usePIDSlot(PIDSlot.SLOT0);
                 m_azimuthMotor.setExternalEncoder(ExternalEncoder.THRIFTY_10_PIN_ENCODER);
+                m_azimuthMotor.setAbsInverted(false);
                 // PID tuned for rotation units (0-1 range) instead of ticks (0-4096)
                 // P scaled up by encoder ticks per revolution (~4096x)
                 //m_azimuthMotor.pid0.setP(0.).setD(0.0).setFF(0.0).setAllowableError(0.0042);
                 m_azimuthMotor.pid0.setP(0.00336).setD(0.00126).setFF(0.0).setAllowableError(0.0042);
-                m_azimuthMotor.setBrakeMode(true);
+                m_azimuthMotor.setBrakeMode(false);
                 m_azimuthMotor.setAbsoluteWrapping(true);
                 break;
             default:
@@ -199,7 +202,7 @@ public class SwerveModule {
      * Get current encoder position in radians, accounting for offset
      */
     public double getEncoderPosition() {
-        double rawTicks = getRawEncoderTicks();
+        double rawTicks = -getRawEncoderTicks();
 
         if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
             // Thrifty encoder: motor controller doesn't apply offset, so we do it in
@@ -240,12 +243,14 @@ public class SwerveModule {
         }
 
         Rotation2d currentAngle = new Rotation2d(getEncoderPosition());
-        desiredState = SwerveModuleState.optimize(desiredState, currentAngle);
+        desiredState.optimize(currentAngle);
 
         double targetRevPerSec = desiredState.speedMetersPerSecond / (SwerveConstants.WHEEL_DIAMETER_METERS * Math.PI) * SwerveConstants.DRIVE_GEAR_RATIO;
         m_driveMotor.setVelocity(targetRevPerSec);
 
         m_desiredAngle = desiredState.angle;
+        SmartDashboard.putNumber(m_moduleName + "/targetAngle", desiredState.angle.getRadians());
+        SmartDashboard.putNumber(m_moduleName + "/currentAngle", getEncoderPosition());
         setAzimuthPosition(desiredState.angle.getRadians());
     }
 
@@ -253,19 +258,19 @@ public class SwerveModule {
      * Set azimuth motor to target angle in radians
      */
     private void setAzimuthPosition(double targetAngleRadians) {
-        if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
+        // if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
             double currentAngle = getEncoderPosition();
             double output = m_turningPID.calculate(currentAngle, targetAngleRadians);
             m_azimuthMotor.set(output);
-    } else {
-        // Convert radians to rotations (0-1 range)
-        double targetRotations = targetAngleRadians / (2 * Math.PI);
-        // Normalize to 0-1 range
-        targetRotations = ((targetRotations % 1.0) + 1.0) % 1.0;
-        // Log the target rotations
-        System.out.println("Target rotations: " + targetRotations);
-        m_azimuthMotor.setPositionAbs(targetRotations);
-    }
+    // } else {
+    //     // Convert radians to rotations (0-1 range)
+    //     double targetRotations = targetAngleRadians / (2 * Math.PI);
+    //     // Normalize to 0-1 range
+    //     targetRotations = ((targetRotations % 1.0) + 1.0) % 1.0;
+    //     // Log the target rotations
+    //     System.out.println("Target rotations: " + targetRotations);
+    //     m_azimuthMotor.setPositionAbs(targetRotations);
+    // }
 }
 
     /**

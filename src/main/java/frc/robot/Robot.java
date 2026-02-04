@@ -32,6 +32,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.VisionSubsystem.cameraData;
 import frc.robot.util.PathUtil;
+import frc.robot.util.logging.LogUtil;
 import edu.wpi.first.math.util.Units;
 
 import java.util.Arrays;
@@ -144,6 +145,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
       // This runs in all robot modes (disabled, auto, teleop, test)
       m_swerve.periodic();
+      LogUtil.getInstance().runUpdateMethods();
       CommandScheduler.getInstance().run();
   } 
 

@@ -25,7 +25,7 @@ public class VisionSubsystem {
     //
     AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     public static List<Pose3d> AprilTagPoses;
-    private final SubsystemCommands subsystemCommands = new SubsystemCommands();
+    //private final SubsystemCommands subsystemCommands = new SubsystemCommands();
   //
     List<List<PhotonPipelineResult>> curCameraResults;
     //
