@@ -134,6 +134,7 @@ public class SwerveModule {
                 m_azimuthMotor.setExternalEncoder(ExternalEncoder.THRIFTY_10_PIN_ENCODER);
                 // PID tuned for rotation units (0-1 range) instead of ticks (0-4096)
                 // P scaled up by encoder ticks per revolution (~4096x)
+                //m_azimuthMotor.pid0.setP(0.).setD(0.0).setFF(0.0).setAllowableError(0.0042);
                 m_azimuthMotor.pid0.setP(0.00336).setD(0.00126).setFF(0.0).setAllowableError(0.0042);
                 m_azimuthMotor.setBrakeMode(true);
                 m_azimuthMotor.setAbsoluteWrapping(true);
