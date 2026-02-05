@@ -4,23 +4,18 @@
 
 package frc.robot.Swerve;
 
-import java.lang.annotation.Target;
-
 import com.thethriftybot.devices.ThriftyNova;
 import com.thethriftybot.devices.ThriftyNova.ExternalEncoder;
 import com.thethriftybot.devices.ThriftyNova.MotorType;
 import com.thethriftybot.devices.ThriftyNova.PIDSlot;
-import com.thethriftybot.devices.ThriftyNova;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.generated.SwerveConstants.ModuleConstants;
-import frc.robot.util.logging.LogUtil;
 
 public class SwerveModule {
     // Motors
@@ -102,116 +97,42 @@ public class SwerveModule {
      * Configure the azimuth motor based on encoder type
      */
     private void configureAzimuthMotor() {
-        // m_azimuthMotor.factoryReset();
-
-        switch (ModuleConstants.ENCODER_SELECTED) {
-            case REDUX_ENCODER:
-                m_azimuthMotor.setExternalEncoder(ExternalEncoder.REDUX_ENCODER);
-                // PID tuned for rotation units (0-1 range) instead of ticks (0-4096)
-                m_azimuthMotor.pid0.setP(0.0336).setD(0.00042);
-                m_azimuthMotor.usePIDSlot(PIDSlot.SLOT0);
-                m_azimuthMotor.setAbsoluteWrapping(true);
-                break;
-
-            case SRX_MAG_ENCODER:
-                m_azimuthMotor.setExternalEncoder(ExternalEncoder.SRX_MAG_ENCODER);
-                // PID tuned for rotation units (0-1 range) instead of ticks (0-4096)
-                m_azimuthMotor.pid0.setP(0.0336).setD(0.00126);
-                m_azimuthMotor.usePIDSlot(PIDSlot.SLOT0);
-                break;
-
-            case REV_ENCODER:
-                m_azimuthMotor.setExternalEncoder(ExternalEncoder.REV_ENCODER);
-                // PID tuned for rotation units (0-1 range) instead of ticks (0-4096)
-                m_azimuthMotor.pid0.setP(0.0336).setD(0.00126);
-                m_azimuthMotor.usePIDSlot(PIDSlot.SLOT0);
-                break;
-
-            case THRIFTY_ABSOLUTE_ENCODER:
-                // No motor controller configuration needed - using RIO PID
-                break;
-
-            case THRIFTY_10PIN_ENCODER:
-                m_azimuthMotor.usePIDSlot(PIDSlot.SLOT0);
-                m_azimuthMotor.setExternalEncoder(ExternalEncoder.THRIFTY_10_PIN_ENCODER);
-                m_azimuthMotor.setAbsInverted(false);
-                // PID tuned for rotation units (0-1 range) instead of ticks (0-4096)
-                // P scaled up by encoder ticks per revolution (~4096x)
-                //m_azimuthMotor.pid0.setP(0.).setD(0.0).setFF(0.0).setAllowableError(0.0042);
-                m_azimuthMotor.pid0.setP(0.00336).setD(0.00126).setFF(0.0).setAllowableError(0.0042);
-                m_azimuthMotor.setBrakeMode(false);
-                m_azimuthMotor.setAbsoluteWrapping(true);
-                break;
-            default:
-                System.err.println("Unknown encoder type for " + m_moduleName);
-                break;
-        }
-
-        // For controller-handled encoders (Redux/SRX/REV), invert motor direction.
-        if (ModuleConstants.ENCODER_SELECTED != SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            m_azimuthMotor.setInversion(m_azimuthInverted);
-        }
+        m_azimuthMotor.usePIDSlot(PIDSlot.SLOT0);
+        m_azimuthMotor.setExternalEncoder(ExternalEncoder.THRIFTY_10_PIN_ENCODER);
+        m_azimuthMotor.setAbsInverted(false);
+        // PID tuned for rotation units (0-1 range) instead of ticks (0-4096)
+        // P scaled up by encoder ticks per revolution (~4096x)
+        //m_azimuthMotor.pid0.setP(0.).setD(0.0).setFF(0.0).setAllowableError(0.0042);
+        m_azimuthMotor.pid0.setP(0.00336).setD(0.00126).setFF(0.0).setAllowableError(0.0042);
+        m_azimuthMotor.setBrakeMode(false);
+        m_azimuthMotor.setAbsoluteWrapping(true);
+        m_azimuthMotor.setInversion(m_azimuthInverted);
     }
 
     /**
      * Initialize the encoder offset, prioritizing saved values over constants
      */
     private void initializeOffset(double constantsOffsetTicks) {
-        if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            // Thrifty encoder: Use constants for initial setup, will check saved values
-            // later in periodic
-            m_encoderOffsetTicks = constantsOffsetTicks;
-            System.out.println(m_moduleName + " Thrifty encoder initialized with constants: " +
-                    ticksToDegrees(constantsOffsetTicks) + " degrees");
-        } else {
-            // Redux/SRX/REV: Set constants to Nova if provided, otherwise Nova will use
-            // whatever is saved
-            if (constantsOffsetTicks != 0) {
-                m_azimuthMotor.setAbsOffset((int) constantsOffsetTicks);
-                System.out.println(m_moduleName + " Nova encoder set to constants: " +
-                        ticksToDegrees(constantsOffsetTicks) + " degrees");
-            } else {
-                System.out.println(m_moduleName + " Nova encoder using saved offset");
-            }
+        m_azimuthMotor.setAbsOffset((int) constantsOffsetTicks);
+        System.out.println(m_moduleName + " Nova encoder set to constants: " +
+                ticksToDegrees(constantsOffsetTicks) + " degrees");
 
-            // Nova handles offset automatically, Java doesn't need to track it
-            m_encoderOffsetTicks = 0;
-        }
+        // Nova handles offset automatically, Java doesn't need to track it
+        m_encoderOffsetTicks = 0;
     }
 
     /**
      * Get raw encoder reading in ticks
      */
     private double getRawEncoderTicks() {
-        double raw;
-        if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            throw new RuntimeException("WHY AM I IN HERE");
-        } else {
-            raw = m_azimuthMotor.getPositionAbs() * m_encoderTicksPerRevolution;
-        }
-        // For THRIFTY_ABSOLUTE_ENCODER, use azimuthInverted to invert
-        // sensor phase when required; otherwise, motor controller manages this.
-        if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER
-                && m_azimuthInverted) {
-            return -raw;
-        }
-        return raw;
+        return m_azimuthMotor.getPositionAbs() * m_encoderTicksPerRevolution;
     }
 
     /**
      * Get current encoder position in radians, accounting for offset
      */
     public double getEncoderPosition() {
-        double rawTicks = -getRawEncoderTicks();
-
-        if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            // Thrifty encoder: motor controller doesn't apply offset, so we do it in
-            // software
-            double adjustedTicks = rawTicks - m_encoderOffsetTicks;
-            return ticksToRadians(adjustedTicks);
-        } else {
-            return ticksToRadians(rawTicks);
-        }
+        return ticksToRadians(-getRawEncoderTicks());
     }
 
     /**
@@ -258,19 +179,17 @@ public class SwerveModule {
      * Set azimuth motor to target angle in radians
      */
     private void setAzimuthPosition(double targetAngleRadians) {
-        // if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            double currentAngle = getEncoderPosition();
-            double output = m_turningPID.calculate(currentAngle, targetAngleRadians);
-            m_azimuthMotor.set(output);
-    // } else {
-    //     // Convert radians to rotations (0-1 range)
-    //     double targetRotations = targetAngleRadians / (2 * Math.PI);
-    //     // Normalize to 0-1 range
-    //     targetRotations = ((targetRotations % 1.0) + 1.0) % 1.0;
-    //     // Log the target rotations
-    //     System.out.println("Target rotations: " + targetRotations);
-    //     m_azimuthMotor.setPositionAbs(targetRotations);
-    // }
+        // double currentAngle = getEncoderPosition();
+        // double output = m_turningPID.calculate(currentAngle, targetAngleRadians);
+        // m_azimuthMotor.set(output);
+
+        // Convert radians to rotations (0-1 range)
+        double targetRotations = targetAngleRadians / (2 * Math.PI);
+        // Normalize to 0-1 range
+        targetRotations = ((targetRotations % 1.0) + 1.0) % 1.0;
+        // Log the target rotations
+        System.out.println("Target rotations: " + targetRotations);
+        m_azimuthMotor.setPositionAbs(targetRotations);
 }
 
     /**
@@ -278,32 +197,15 @@ public class SwerveModule {
      */
     public void setZeroOffset() {
         double currentRawTicks = getRawEncoderTicks();
+        // Redux/SRX/REV: Nova automatically applies offset to readings
+        // Nova does "position = raw + offset"
+        // To make current position = 0: 0 = raw + offset, so offset = -raw
+        // setAbsOffset expects ticks (as int)
+        int newOffset = -(int) currentRawTicks;
+        m_azimuthMotor.setAbsOffset(newOffset);
 
-        if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            // Thrifty encoder: Read through RoboRIO AnalogEncoder, not Nova
-            // Java does "position = raw - offset"
-            // To make current position = 0: 0 = raw - offset, so offset = raw
-            m_encoderOffsetTicks = currentRawTicks;
-
-            // Save to Nova for persistence, but Nova doesn't use it for Thrifty encoder
-            // control
-            // (This is just for storing the value between code deploys)
-            // setAbsOffset expects ticks (as int)
-            m_azimuthMotor.setAbsOffset((int) currentRawTicks);
-
-            System.out.println(m_moduleName + " Thrifty encoder zeroed. Java offset: " + currentRawTicks +
-                    " ticks (" + ticksToDegrees(currentRawTicks) + " degrees)");
-        } else {
-            // Redux/SRX/REV: Nova automatically applies offset to readings
-            // Nova does "position = raw + offset"
-            // To make current position = 0: 0 = raw + offset, so offset = -raw
-            // setAbsOffset expects ticks (as int)
-            int newOffset = -(int) currentRawTicks;
-            m_azimuthMotor.setAbsOffset(newOffset);
-
-            System.out.println(m_moduleName + " Nova encoder zeroed. Raw: " + (int) currentRawTicks +
-                    " ticks, Nova offset: " + newOffset + " ticks");
-        }
+        System.out.println(m_moduleName + " Nova encoder zeroed. Raw: " + (int) currentRawTicks +
+                " ticks, Nova offset: " + newOffset + " ticks");
 
         // Verify the zero worked by checking position
         System.out.println(m_moduleName + " Position after zero: " +
