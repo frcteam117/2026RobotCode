@@ -115,6 +115,7 @@ public class Robot extends TimedRobot {
 
   
   public Robot () {
+    navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
     //
     pathRunning = false;
     SmartDashboard.putBoolean("running Path1Command",true);
@@ -160,7 +161,7 @@ public class Robot extends TimedRobot {
     curPose = m_swerve.getPose();
     curX = curPose.getX();
     curY = curPose.getY();
-    //curRot = curPose.getRotation();
+    // curRot = curPose.getRotation();
 
     if (m_controller.getSquareButtonPressed()) {
         navX.resetYaw();
@@ -172,18 +173,18 @@ public class Robot extends TimedRobot {
     driveWithJoystick(true);
     }
     //
-    if (m_controller.getCircleButton()) { // trigger pathCommands without cameras attached
-        Command command = pathUtil.getPathFromTagID(1, m_swerve, true, getPeriod(), this, targetYaw); // is targetYaw right here?
-        if (!command.isScheduled()) {
-            System.out.println("command scheduled");
-            command.schedule();
-        }
-        else {
-        System.out.println("command already scheduled");
-        }
-        pathRunning = true;
-        System.out.println("circle pressed");
-    }
+    // if (m_controller.getCircleButton()) { // trigger pathCommands without cameras attached
+    //     Command command = pathUtil.getPathFromTagID(1, m_swerve, true, getPeriod(), this, targetYaw); // is targetYaw right here?
+    //     if (!command.isScheduled()) {
+    //         System.out.println("command scheduled");
+    //         command.schedule();
+    //     }
+    //     else {
+    //     System.out.println("command already scheduled");
+    //     }
+    //     pathRunning = true;
+    //     System.out.println("circle pressed");
+    // }
   }
   //
   @Override

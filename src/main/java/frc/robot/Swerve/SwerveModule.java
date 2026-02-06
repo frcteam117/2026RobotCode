@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.generated.SwerveConstants.ModuleConstants;
+import frc.robot.util.logging.TunableDouble;
 
 public class SwerveModule {
     // Motors
@@ -68,7 +69,7 @@ public class SwerveModule {
         initializeOffset(encoderOffsetTicks);
 
         // Configure turning PID for continuous input (-180 to 180 degrees)
-        m_turningPID.enableContinuousInput(-Math.PI, Math.PI);
+        // m_turningPID.enableContinuousInput(-Math.PI, Math.PI);
         // LogUtil.createTunablePID("Drive/TurningPID/", m_turningPID, () -> true);
 
         System.out.println(m_moduleName + " module initialized successfully");
@@ -82,31 +83,54 @@ public class SwerveModule {
 
         // Configure drive PID and feedforward
         // PID tuned for rotation units instead of ticks (scaled up by NEO_ENCODER_TICKS_PER_REV = 42)
-        m_driveMotor.pid0.setPID(new PIDController(0.0042, 0.0, 0.0));
+        // m_driveMotor.pid0.setPID(new PIDController(0.0042, 0.0, 0.0));
         // Set feedforward based on mechanism characteristics:
         // FF = 1.0 / maxRevPerSec (for velocity control in rotations/sec)
         double estimatedMaxMps = SwerveConstants.TOP_SPEED_METERS_PER_SEC;
         double maxRevPerSec = estimatedMaxMps / (SwerveConstants.WHEEL_DIAMETER_METERS * Math.PI / SwerveConstants.DRIVE_GEAR_RATIO);
-        m_driveMotor.pid0.setFF(1.0 / maxRevPerSec);
+        double P = 0.0042;
+        double I = 0.0;
+        double D = 0.0;
+        double F = 1.0 / maxRevPerSec;
+        double allowableError = 0.0;
+        double accumulatorCap = 0.0;
+        m_driveMotor.pid0.setP(P).setI(I).setD(D).setFF(F);
         m_driveMotor.usePIDSlot(PIDSlot.SLOT0);
         m_driveMotor.setMaxOutput(0.2); // TODO probably don't always want to limit this
         m_driveMotor.setInversion(m_driveInverted);
+        new TunableDouble("Tuning/Drive/1 P", P, () -> true, p -> m_driveMotor.pid0.setP(p));
+        new TunableDouble("Tuning/Drive/2 I", I, () -> true, i -> m_driveMotor.pid0.setI(i));
+        new TunableDouble("Tuning/Drive/3 D", D, () -> true, d -> m_driveMotor.pid0.setD(d));
+        new TunableDouble("Tuning/Drive/4 F", F, () -> true, f -> m_driveMotor.pid0.setFF(f));
+        new TunableDouble("Tuning/Drive/5 allowableError", allowableError, () -> true, error -> m_driveMotor.pid0.setAllowableError(error));
+        new TunableDouble("Tuning/Drive/6 accumulatorCap", accumulatorCap, () -> true, cap -> m_driveMotor.pid0.setAccumulatorCap(cap));
     }
 
     /**
      * Configure the azimuth motor based on encoder type
      */
     private void configureAzimuthMotor() {
+        double P = 0.07;
+        double I = 0.0;
+        double D = 0.0;
+        double F = 0.0;
+        double allowableError = 0.0;
+        double accumulatorCap = 0.0;
         m_azimuthMotor.usePIDSlot(PIDSlot.SLOT0);
         m_azimuthMotor.setExternalEncoder(ExternalEncoder.THRIFTY_10_PIN_ENCODER);
-        m_azimuthMotor.setAbsInverted(false);
         // PID tuned for rotation units (0-1 range) instead of ticks (0-4096)
         // P scaled up by encoder ticks per revolution (~4096x)
         //m_azimuthMotor.pid0.setP(0.).setD(0.0).setFF(0.0).setAllowableError(0.0042);
-        m_azimuthMotor.pid0.setP(0.00336).setD(0.00126).setFF(0.0).setAllowableError(0.0042);
+        m_azimuthMotor.pid0.setP(P).setI(I).setD(D).setFF(F);
         m_azimuthMotor.setBrakeMode(false);
         m_azimuthMotor.setAbsoluteWrapping(true);
         m_azimuthMotor.setInversion(m_azimuthInverted);
+        new TunableDouble("Tuning/Azimuth/1 P", P, () -> true, p -> m_azimuthMotor.pid0.setP(p));
+        new TunableDouble("Tuning/Azimuth/2 I", I, () -> true, i -> m_azimuthMotor.pid0.setI(i));
+        new TunableDouble("Tuning/Azimuth/3 D", D, () -> true, d -> m_azimuthMotor.pid0.setD(d));
+        new TunableDouble("Tuning/Azimuth/4 F", P, () -> true, f -> m_azimuthMotor.pid0.setFF(f));
+        new TunableDouble("Tuning/Azimuth/5 allowableError", allowableError, () -> true, error -> m_azimuthMotor.pid0.setAllowableError(error));
+        new TunableDouble("Tuning/Azimuth/6 accumulatorCap", accumulatorCap, () -> true, cap -> m_azimuthMotor.pid0.setAccumulatorCap(cap));
     }
 
     /**
@@ -114,8 +138,8 @@ public class SwerveModule {
      */
     private void initializeOffset(double constantsOffsetTicks) {
         m_azimuthMotor.setAbsOffset((int) constantsOffsetTicks);
-        System.out.println(m_moduleName + " Nova encoder set to constants: " +
-                ticksToDegrees(constantsOffsetTicks) + " degrees");
+        // System.out.println(m_moduleName + " Nova encoder set to constants: " +
+        //         ticksToDegrees(constantsOffsetTicks) + " degrees");
 
         // Nova handles offset automatically, Java doesn't need to track it
         m_encoderOffsetTicks = 0;
@@ -132,7 +156,9 @@ public class SwerveModule {
      * Get current encoder position in radians, accounting for offset
      */
     public double getEncoderPosition() {
-        return ticksToRadians(-getRawEncoderTicks());
+        // return ticksToRadians(-getRawEncoderTicks());
+        // SmartDashboard.putNumber(m_moduleName + " encoder position", m_azimuthMotor.getPositionAbs());
+        return 2 * Math.PI * (1 - m_azimuthMotor.getPositionAbs());
     }
 
     /**
@@ -158,10 +184,10 @@ public class SwerveModule {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
         // Skip optimization and hold position when not actually moving
-        if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
-            m_driveMotor.set(0);
-            return;
-        }
+        // if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
+        //     m_driveMotor.set(0);
+        //     return;
+        // }
 
         Rotation2d currentAngle = new Rotation2d(getEncoderPosition());
         desiredState.optimize(currentAngle);
@@ -170,7 +196,8 @@ public class SwerveModule {
         m_driveMotor.setVelocity(targetRevPerSec);
 
         m_desiredAngle = desiredState.angle;
-        SmartDashboard.putNumber(m_moduleName + "/targetAngle", desiredState.angle.getRadians());
+        // System.out.println(getEncoderPosition());
+                SmartDashboard.putNumber(m_moduleName + "/targetAngle", desiredState.angle.getRadians());
         SmartDashboard.putNumber(m_moduleName + "/currentAngle", getEncoderPosition());
         setAzimuthPosition(desiredState.angle.getRadians());
     }
@@ -184,11 +211,11 @@ public class SwerveModule {
         // m_azimuthMotor.set(output);
 
         // Convert radians to rotations (0-1 range)
-        double targetRotations = targetAngleRadians / (2 * Math.PI);
+        double targetRotations = -targetAngleRadians / (2 * Math.PI);
         // Normalize to 0-1 range
         targetRotations = ((targetRotations % 1.0) + 1.0) % 1.0;
         // Log the target rotations
-        System.out.println("Target rotations: " + targetRotations);
+        // System.out.println("Target rotations: " + targetRotations);
         m_azimuthMotor.setPositionAbs(targetRotations);
 }
 
@@ -204,12 +231,12 @@ public class SwerveModule {
         int newOffset = -(int) currentRawTicks;
         m_azimuthMotor.setAbsOffset(newOffset);
 
-        System.out.println(m_moduleName + " Nova encoder zeroed. Raw: " + (int) currentRawTicks +
-                " ticks, Nova offset: " + newOffset + " ticks");
+        // System.out.println(m_moduleName + " Nova encoder zeroed. Raw: " + (int) currentRawTicks +
+        //         " ticks, Nova offset: " + newOffset + " ticks");
 
-        // Verify the zero worked by checking position
-        System.out.println(m_moduleName + " Position after zero: " +
-                Math.toDegrees(getEncoderPosition()) + " degrees");
+        // // Verify the zero worked by checking position
+        // System.out.println(m_moduleName + " Position after zero: " +
+        //         Math.toDegrees(getEncoderPosition()) + " degrees");
     }
 
     /**
@@ -225,38 +252,38 @@ public class SwerveModule {
      */
     public void updateSmartDashboard() {
         // Display encoder values
-        SmartDashboard.putNumber(m_moduleName + " Raw Encoder (ticks)", getRawEncoderTicks());
-        SmartDashboard.putNumber(m_moduleName + " Position (deg)", Math.toDegrees(getEncoderPosition()));
-        SmartDashboard.putNumber(m_moduleName + " Position (rad)", getEncoderPosition());
-        SmartDashboard.putNumber(m_moduleName + " desired angle (rad)", m_desiredAngle.getRadians());
+        // SmartDashboard.putNumber(m_moduleName + " Raw Encoder (ticks)", getRawEncoderTicks());
+        // SmartDashboard.putNumber(m_moduleName + " Position (deg)", Math.toDegrees(getEncoderPosition()));
+        // SmartDashboard.putNumber(m_moduleName + " Position (rad)", getEncoderPosition());
+        // SmartDashboard.putNumber(m_moduleName + " desired angle (rad)", m_desiredAngle.getRadians());
 
-        // Display offset info based on encoder type
-        if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
-            SmartDashboard.putNumber(m_moduleName + " Java Offset (ticks)", m_encoderOffsetTicks);
-            SmartDashboard.putNumber(m_moduleName + " Java Offset (deg)", ticksToDegrees(m_encoderOffsetTicks));
-        }
+        // // Display offset info based on encoder type
+        // if (ModuleConstants.ENCODER_SELECTED == SwerveConstants.EncoderType.THRIFTY_ABSOLUTE_ENCODER) {
+        //     SmartDashboard.putNumber(m_moduleName + " Java Offset (ticks)", m_encoderOffsetTicks);
+        //     SmartDashboard.putNumber(m_moduleName + " Java Offset (deg)", ticksToDegrees(m_encoderOffsetTicks));
+        // }
         
-        // Raw encoder readings from ThriftyNova (in rotations, 0-1 range)
-        SmartDashboard.putNumber(m_moduleName + " Raw getPositionAbs (rotations)", m_azimuthMotor.getPositionAbs());
-        SmartDashboard.putNumber(m_moduleName + " Raw getPosition (rotations)", m_azimuthMotor.getPosition());
-        SmartDashboard.putNumber(m_moduleName + " Raw getPositionInternal (rotations)", m_azimuthMotor.getPositionInternal());
-        SmartDashboard.putNumber(m_moduleName + " Raw as Ticks (x4096)", m_azimuthMotor.getPositionAbs() * m_encoderTicksPerRevolution);
+        // // Raw encoder readings from ThriftyNova (in rotations, 0-1 range)
+        // SmartDashboard.putNumber(m_moduleName + " Raw getPositionAbs (rotations)", m_azimuthMotor.getPositionAbs());
+        // SmartDashboard.putNumber(m_moduleName + " Raw getPosition (rotations)", m_azimuthMotor.getPosition());
+        // SmartDashboard.putNumber(m_moduleName + " Raw getPositionInternal (rotations)", m_azimuthMotor.getPositionInternal());
+        // SmartDashboard.putNumber(m_moduleName + " Raw as Ticks (x4096)", m_azimuthMotor.getPositionAbs() * m_encoderTicksPerRevolution);
         
-        // Display drive motor info
-        SmartDashboard.putNumber(m_moduleName + " Drive Velocity", getSwerveState().speedMetersPerSecond);
-        SmartDashboard.putNumber(m_moduleName + " Drive Position", getSwervePosition().distanceMeters);
+        // // Display drive motor info
+        // SmartDashboard.putNumber(m_moduleName + " Drive Velocity", getSwerveState().speedMetersPerSecond);
+        // SmartDashboard.putNumber(m_moduleName + " Drive Position", getSwervePosition().distanceMeters);
 
-        String driveErrors = "";
-        for (com.thethriftybot.devices.ThriftyNova.Error error : m_driveMotor.getErrors()) {
-            driveErrors += error.toString() +  ", ";
-        }
-        String azimuthErrors = "";
-        for (com.thethriftybot.devices.ThriftyNova.Error error : m_azimuthMotor.getErrors()) {
-            azimuthErrors += error.toString() +  ", ";
-        }
+        // String driveErrors = "";
+        // for (com.thethriftybot.devices.ThriftyNova.Error error : m_driveMotor.getErrors()) {
+        //     driveErrors += error.toString() +  ", ";
+        // }
+        // String azimuthErrors = "";
+        // for (com.thethriftybot.devices.ThriftyNova.Error error : m_azimuthMotor.getErrors()) {
+        //     azimuthErrors += error.toString() +  ", ";
+        // }
 
-        SmartDashboard.putString(m_moduleName + " drive errors", driveErrors);
-        SmartDashboard.putString(m_moduleName + " azimuth errors", azimuthErrors);
+        // SmartDashboard.putString(m_moduleName + " drive errors", driveErrors);
+        // SmartDashboard.putString(m_moduleName + " azimuth errors", azimuthErrors);
     }
 
     // Utility methods for unit conversions

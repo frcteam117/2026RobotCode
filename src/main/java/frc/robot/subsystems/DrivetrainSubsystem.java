@@ -237,22 +237,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // Current chassis speeds
         ChassisSpeeds speeds = getChassisSpeeds();
+        // SmartDashboard.putData("ChassisSpeeds", speeds);
         SmartDashboard.putNumber("Chassis X Speed (m/s)", speeds.vxMetersPerSecond);
         SmartDashboard.putNumber("Chassis Y Speed (m/s)", speeds.vyMetersPerSecond);
         SmartDashboard.putNumber("Chassis Angular Speed (rad/s)", speeds.omegaRadiansPerSecond);
 
         // Module states for debugging
-        SmartDashboard.putNumber("FL Speed (m/s)", m_frontLeft.getSwerveState().speedMetersPerSecond);
-        SmartDashboard.putNumber("FL Angle (deg)", m_frontLeft.getSwerveState().angle.getDegrees());
+        // SmartDashboard.putNumber("FL Speed (m/s)", m_frontLeft.getSwerveState().speedMetersPerSecond);
+        // SmartDashboard.putNumber("FL Angle (deg)", m_frontLeft.getSwerveState().angle.getDegrees());
 
-        SmartDashboard.putNumber("FR Speed (m/s)", m_frontRight.getSwerveState().speedMetersPerSecond);
-        SmartDashboard.putNumber("FR Angle (deg)", m_frontRight.getSwerveState().angle.getDegrees());
+        // SmartDashboard.putNumber("FR Speed (m/s)", m_frontRight.getSwerveState().speedMetersPerSecond);
+        // SmartDashboard.putNumber("FR Angle (deg)", m_frontRight.getSwerveState().angle.getDegrees());
 
-        SmartDashboard.putNumber("BL Speed (m/s)", m_backLeft.getSwerveState().speedMetersPerSecond);
-        SmartDashboard.putNumber("BL Angle (deg)", m_backLeft.getSwerveState().angle.getDegrees());
+        // SmartDashboard.putNumber("BL Speed (m/s)", m_backLeft.getSwerveState().speedMetersPerSecond);
+        // SmartDashboard.putNumber("BL Angle (deg)", m_backLeft.getSwerveState().angle.getDegrees());
 
-        SmartDashboard.putNumber("BR Speed (m/s)", m_backRight.getSwerveState().speedMetersPerSecond);
-        SmartDashboard.putNumber("BR Angle (deg)", m_backRight.getSwerveState().angle.getDegrees());
+        // SmartDashboard.putNumber("BR Speed (m/s)", m_backRight.getSwerveState().speedMetersPerSecond);
+        // SmartDashboard.putNumber("BR Angle (deg)", m_backRight.getSwerveState().angle.getDegrees());
         actualStatePublisher.set(
                     new SwerveModuleState[]{
                         m_frontLeft.getSwerveState(),
@@ -270,35 +271,35 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     private void handleSmartDashboardButtons() {
         // Initialize buttons if they don't exist
-        if (!SmartDashboard.containsKey("Reset Odometry")) {
-            SmartDashboard.putBoolean("Reset Odometry", false);
-        }
-        if (!SmartDashboard.containsKey("Set X Formation")) {
-            SmartDashboard.putBoolean("Set X Formation", false);
-        }
-        if (!SmartDashboard.containsKey("Stop All Modules")) {
-            SmartDashboard.putBoolean("Stop All Modules", false);
-        }
+        // if (!SmartDashboard.containsKey("Reset Odometry")) {
+        //     SmartDashboard.putBoolean("Reset Odometry", false);
+        // }
+        // if (!SmartDashboard.containsKey("Set X Formation")) {
+        //     SmartDashboard.putBoolean("Set X Formation", false);
+        // }
+        // if (!SmartDashboard.containsKey("Stop All Modules")) {
+        //     SmartDashboard.putBoolean("Stop All Modules", false);
+        // }
 
-        // Reset odometry button
-        if (SmartDashboard.getBoolean("Reset Odometry", false)) {
-            resetOdometry(new Pose2d());
-            SmartDashboard.putBoolean("Reset Odometry", false);
-            System.out.println("Odometry reset to origin");
-        }
+        // // Reset odometry button
+        // if (SmartDashboard.getBoolean("Reset Odometry", false)) {
+        //     resetOdometry(new Pose2d());
+        //     SmartDashboard.putBoolean("Reset Odometry", false);
+        //     System.out.println("Odometry reset to origin");
+        // }
 
-        // X formation button
-        if (SmartDashboard.getBoolean("Set X Formation", false)) {
-            setX();
-            SmartDashboard.putBoolean("Set X Formation", false);
-            System.out.println("Set to X formation");
-        }
+        // // X formation button
+        // if (SmartDashboard.getBoolean("Set X Formation", false)) {
+        //     setX();
+        //     SmartDashboard.putBoolean("Set X Formation", false);
+        //     System.out.println("Set to X formation");
+        // }
 
-        // Stop all modules button
-        if (SmartDashboard.getBoolean("Stop All Modules", false)) {
-            stopModules();
-            SmartDashboard.putBoolean("Stop All Modules", false);
-            System.out.println("All modules stopped");
-        }
+        // // Stop all modules button
+        // if (SmartDashboard.getBoolean("Stop All Modules", false)) {
+        //     stopModules();
+        //     SmartDashboard.putBoolean("Stop All Modules", false);
+        //     System.out.println("All modules stopped");
+        // }
     }
 }
