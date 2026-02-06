@@ -34,7 +34,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
 public class HopperSubsystem extends SubsystemBase
-{
+{ // incorporate in kicker motor(s) here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // adjust device IDs, obviously
   private final SparkMax hopperMotor = new SparkMax(12, MotorType.kBrushless);
     //  private final SmartMotorControllerTelemetryConfig motorTelemetryConfig = new SmartMotorControllerTelemetryConfig()

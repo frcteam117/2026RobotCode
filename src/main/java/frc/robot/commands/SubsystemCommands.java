@@ -41,7 +41,6 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -119,14 +118,12 @@ public class SubsystemCommands {
     //};
   //
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private static final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
-  /* 
     public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     
      public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
      public static final HoodSubsystem hoodSubsystem = new HoodSubsystem();
     public static final HopperSubsystem hopperSubsystem = new HopperSubsystem();
-    public static final KickerSubsystem kickerSubsystem = new KickerSubsystem();
     //=====
     
     
@@ -143,7 +140,7 @@ public class SubsystemCommands {
                 drivetrain.drive(0.0, 0.0, 0.0, fieldRelative, m_period); // add way to stop the robot?????
         });
 
-    }
+    }/*
     //=================================== // unclear is these will center here or stem from their individual subsystems?
     // non-drivetrain subsystem commands:
     public static Command ExpandHopper() {
