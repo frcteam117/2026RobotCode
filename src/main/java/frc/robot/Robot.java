@@ -71,9 +71,9 @@ public class Robot extends TimedRobot {
   //private final DrivetrainSubsystem m_swerve = SubsystemCommands.drivetrainSubsystem;//new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   private final SwerveModuleSimulation swerveModuleSim = new SwerveModuleSimulation();
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
-  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(1);
-  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(9);
+  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(2);
+  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(2);
+  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(20);
     // 
   private Rotation2d zeroRotation = Rotation2d.kZero;
   public final PhotonCamera camera0; // needs callibrated

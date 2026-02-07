@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Represents a swerve drive style drivetrain. */
 public class DrivetrainSubsystem extends SubsystemBase {
-    public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
+    public static final double kMaxAngularSpeed = 4* Math.PI; // 1/2 rotation per second
 
     private final SwerveModule m_frontLeft = new SwerveModule(
             ModuleConstants.FRONT_LEFT_DRIVE_MOTOR_ID,
@@ -74,7 +74,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             SwerveConstants.BACK_LEFT_LOCATION, SwerveConstants.BACK_RIGHT_LOCATION);
 
     private final SwerveDriveOdometry m_odometry;
-    private final StructArrayPublisher<SwerveModuleState> actualStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("Drive/Measured Swerve", SwerveModuleState.struct).publish();
+    private final StructArrayPublisher<SwerveModuleState> actualStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("Drive/MeasuredSwerve", SwerveModuleState.struct).publish();
     private final StructArrayPublisher<SwerveModuleState> goalStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("Drive/Goal Swerve", SwerveModuleState.struct).publish();
 
 
@@ -112,7 +112,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
         ChassisSpeeds speeds = fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyroSupplier.get())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyroSupplier.get().unaryMinus())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot);
 
         var swerveModuleStates = m_kinematics.toSwerveModuleStates(

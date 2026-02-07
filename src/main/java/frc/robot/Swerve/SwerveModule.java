@@ -96,8 +96,13 @@ public class SwerveModule {
         double accumulatorCap = 0.0;
         m_driveMotor.pid0.setP(P).setI(I).setD(D).setFF(F);
         m_driveMotor.usePIDSlot(PIDSlot.SLOT0);
-        m_driveMotor.setMaxOutput(0.2); // TODO probably don't always want to limit this
+        m_driveMotor.setMaxOutput(0.4); // TODO probably don't always want to limit this
         m_driveMotor.setInversion(m_driveInverted);
+        m_driveMotor.canFreq.setControl(0.02);
+        m_driveMotor.canFreq.setCurrent(0.02);
+        m_driveMotor.canFreq.setFault(0.02);
+        m_driveMotor.canFreq.setQuadSensor(0.02);
+        m_driveMotor.canFreq.setSensor(0.02);
         new TunableDouble("Tuning/Drive/1 P", P, () -> true, p -> m_driveMotor.pid0.setP(p));
         new TunableDouble("Tuning/Drive/2 I", I, () -> true, i -> m_driveMotor.pid0.setI(i));
         new TunableDouble("Tuning/Drive/3 D", D, () -> true, d -> m_driveMotor.pid0.setD(d));
@@ -125,6 +130,11 @@ public class SwerveModule {
         m_azimuthMotor.setBrakeMode(false);
         m_azimuthMotor.setAbsoluteWrapping(true);
         m_azimuthMotor.setInversion(m_azimuthInverted);
+        m_azimuthMotor.canFreq.setControl(0.02);
+        m_azimuthMotor.canFreq.setCurrent(0.02);
+        m_azimuthMotor.canFreq.setFault(0.02);
+        m_azimuthMotor.canFreq.setQuadSensor(0.02);
+        m_azimuthMotor.canFreq.setSensor(0.02);
         new TunableDouble("Tuning/Azimuth/1 P", P, () -> true, p -> m_azimuthMotor.pid0.setP(p));
         new TunableDouble("Tuning/Azimuth/2 I", I, () -> true, i -> m_azimuthMotor.pid0.setI(i));
         new TunableDouble("Tuning/Azimuth/3 D", D, () -> true, d -> m_azimuthMotor.pid0.setD(d));
@@ -167,6 +177,8 @@ public class SwerveModule {
     public SwerveModuleState getSwerveState() {
         double velocityRevPerSec = m_driveMotor.getVelocity();
         double velocityMPS = velocityRevPerSec * (SwerveConstants.WHEEL_DIAMETER_METERS * Math.PI) / SwerveConstants.DRIVE_GEAR_RATIO;
+        SmartDashboard.putNumber(m_moduleName + "/azimuthInternal", m_azimuthMotor.getPositionInternal());
+        SmartDashboard.putNumber(m_moduleName + "/azimuthAbsolute", m_azimuthMotor.getPositionAbs());
         return new SwerveModuleState(velocityMPS, new Rotation2d(getEncoderPosition()));
     }
 
@@ -197,7 +209,8 @@ public class SwerveModule {
 
         m_desiredAngle = desiredState.angle;
         // System.out.println(getEncoderPosition());
-                SmartDashboard.putNumber(m_moduleName + "/targetAngle", desiredState.angle.getRadians());
+
+        SmartDashboard.putNumber(m_moduleName + "/targetAngle", desiredState.angle.getRadians());
         SmartDashboard.putNumber(m_moduleName + "/currentAngle", getEncoderPosition());
         setAzimuthPosition(desiredState.angle.getRadians());
     }
