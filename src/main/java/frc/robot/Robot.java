@@ -92,8 +92,8 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
     curPose = m_swerve.getPose();
     curX = curPose.getX();
     curY = curPose.getY();
-    // curRot = curPose.getRotation();
-/*
+    //curRot = curPose.getRotation();
+
     if (m_controller.getSquareButtonPressed()) {
         navX.resetYaw();
     }
@@ -103,7 +103,7 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
     } else {
     driveWithJoystick(true);
     }
-    */
+    
     //
     // if (m_controller.getCircleButton()) { // trigger pathCommands without cameras attached
     //     Command command = pathUtil.getPathFromTagID(1, m_swerve, true, getPeriod(), this, targetYaw); // is targetYaw right here?
