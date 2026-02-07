@@ -1,11 +1,16 @@
 package frc.robot.commands.auto;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
+import org.photonvision.PhotonCamera;
 
 import com.studica.frc.Navx;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
@@ -13,6 +18,7 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.PathCommands;
 import frc.robot.commands.SubsystemCommands;
 import frc.robot.subsystems.*;
+//
 public final class Autos {
     Pose2d robotStartPose;
     private final Navx navX = new Navx(0, 100); 
@@ -20,20 +26,37 @@ public final class Autos {
     DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());
     // will instantiating this a bunch of times in different files make it so resetting
     // - the odometry is useless???? IDK DO RESEARCH!!!!
+    static Optional<Alliance> alliance;
+    static Boolean alliancePresent = false;
+    //
     private Autos() {
     //throw new UnsupportedOperationException("don't use this dummy");
         robotStartPose = subsystemCommands.GetStartPoseFromVisibleAprilTags();
         drivetrainSubsystem.resetOdometry(robotStartPose);
         //
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+                alliancePresent = true;
+            } else {
+            }
     }
   //
   public Command AutoPrototype1(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, 
     Robot robot, Double targetYaw) { // figure out how running this is gonna work,
         // - you'll probably need to get rid of the parameters and have the Autos.java file
         // - deal with it itself
+        int startGoalTagID = 0;
+        if (alliance.get() == Alliance.Red) { // if on red side, add x,y,rot
+            startGoalTagID = 9; // or 10
+        }
+        else if (alliance.get() == Alliance.Blue) { // if on blue side, subtract x,y,rot
+            startGoalTagID = 25; // or 26
+        } // add error catcher for if no alliance?
+        // also: add something that determines whether 9/10 or 25/26 is better!!!!! or just have an
+        // -  auto for each
         List<Pose2d> targetPoses = Arrays.asList(new Pose2d(
-            RobotContainer.AprilTagPoses.get(3).getX(), // go to a tag
-            RobotContainer.AprilTagPoses.get(3).getY(),
+            RobotContainer.AprilTagPoses.get(startGoalTagID).getX(), // go to a tag
+            RobotContainer.AprilTagPoses.get(startGoalTagID).getY(),
             Rotation2d.fromDegrees(targetYaw) //does this need to be the difference of smth? idk
         ));
         return Commands.sequence(

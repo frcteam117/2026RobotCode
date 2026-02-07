@@ -219,7 +219,7 @@ public class PathCommands {
             }).until(() -> CloseEnough(drivetrain.getPose(),targetPose))
         );
     }
-    
+    // change to be from current pose VVV
     public Command DriveToCenterFromOrigin(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, 
     Robot robot, Double targetYaw) {
         List<Pose2d> targetPoses = Arrays.asList(new Pose2d(
