@@ -37,9 +37,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.generated.SwerveConstants;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.Swerve.SwerveConstants;
+import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
+import frc.robot.subsystems.ShooterSubsystem.Shooter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 //
@@ -86,7 +86,7 @@ public class PathCommands {
     //
     static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     //
-    public static void AlignToTag(DrivetrainSubsystem drivetrain, Double m_period, Boolean fieldRelative) {
+    public static void AlignToTag(Drivetrain drivetrain, Double m_period, Boolean fieldRelative) {
         //    change 2??? vvv
             if (RobotContainer.targetRange > 2 && RobotContainer.targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
                 SmartDashboard.putNumber("check #",2);
@@ -105,7 +105,7 @@ public class PathCommands {
     }
 
     //
-    public static void setSwerve(DrivetrainSubsystem drivetrain, double m_period, double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    public static void setSwerve(Drivetrain drivetrain, double m_period, double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         double a =
         m_xspeedLimiter.calculate(MathUtil.applyDeadband(xSpeed, 0.03))
             * SwerveConstants.TOP_SPEED_METERS_PER_SEC
@@ -186,7 +186,7 @@ public class PathCommands {
     public Command BlankCommand() {
         return Commands.runOnce( () -> {});
     }
-    public Command StopSwerve(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period) {
+    public Command StopSwerve(Drivetrain drivetrain, Boolean fieldRelative, Double m_period) {
         //Drivetrain m_swerve,
         return Commands.runOnce( () -> {
                 drivetrain.drive(0.0, 0.0, 0.0, fieldRelative, m_period); // add way to stop the robot?????
@@ -196,7 +196,7 @@ public class PathCommands {
 //===========================================================================================================
     // IDK IF I HAVE TO ADD .relativeTo TO THE END OF ALL THE POSE OR NOT??????????????????
 
-    public Command Path1Command(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period) {        
+    public Command Path1Command(Drivetrain drivetrain, Boolean fieldRelative, Double m_period) {        
         Pose2d targetPose = new Pose2d(-0.5, 0.5, Rotation2d.fromDegrees(0));
         System.out.println("thingy run");
         return Commands.sequence(
@@ -210,7 +210,7 @@ public class PathCommands {
         );
     }
 
-    public Command Path2Command(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period) {
+    public Command Path2Command(Drivetrain drivetrain, Boolean fieldRelative, Double m_period) {
         Pose2d targetPose = new Pose2d(0.5, -0.5, Rotation2d.fromDegrees(0));
         return Commands.sequence(
             Commands.run(() -> {
@@ -220,7 +220,7 @@ public class PathCommands {
         );
     }
     // change to be from current pose VVV
-    public Command DriveToCenterFromOrigin(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, 
+    public Command DriveToCenterFromOrigin(Drivetrain drivetrain, Boolean fieldRelative, Double m_period, 
     Robot robot, Double targetYaw) {
         List<Pose2d> targetPoses = Arrays.asList(new Pose2d(
             RobotContainer.AprilTagPoses.get(12).getX(), // go to a tag

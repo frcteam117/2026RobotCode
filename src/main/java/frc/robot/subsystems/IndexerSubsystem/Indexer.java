@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.IndexerSubsystem;
 
 
 import static edu.wpi.first.units.Units.Amps;
@@ -40,7 +40,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
-public class IndexerSubsystem extends SubsystemBase
+public class Indexer extends SubsystemBase
 {     // adjust device IDs, obviously
   private final SparkMax hopperMotor = new SparkMax(12, MotorType.kBrushless);
     //  private final SmartMotorControllerTelemetryConfig motorTelemetryConfig = new SmartMotorControllerTelemetryConfig()
@@ -117,7 +117,7 @@ public class IndexerSubsystem extends SubsystemBase
   private final Arm hopper = new Arm(m_hopperConfig);
   private final FlyWheel kicker = new FlyWheel(m_kickerConfig);
 
-  public IndexerSubsystem()
+  public Indexer()
   {
   }
 

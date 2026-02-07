@@ -18,21 +18,18 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.PathCommands;
 import frc.robot.commands.SubsystemCommands;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
+import frc.robot.subsystems.DrivetrainSubsystem.DrivetrainSubsystem;
 //
 public final class Autos {
     Pose2d robotStartPose;
-    private final Navx navX = new Navx(0, 100); 
-    SubsystemCommands subsystemCommands = new SubsystemCommands();
-    DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());
-    // will instantiating this a bunch of times in different files make it so resetting
-    // - the odometry is useless???? IDK DO RESEARCH!!!!
     static Optional<Alliance> alliance;
     static Boolean alliancePresent = false;
     //
-    private Autos() {
+    private Autos(Drivetrain drivetrain, SubsystemCommands subsystemCommands) {
     //throw new UnsupportedOperationException("don't use this dummy");
         robotStartPose = subsystemCommands.GetStartPoseFromVisibleAprilTags();
-        drivetrainSubsystem.resetOdometry(robotStartPose);
+        drivetrain.resetOdometry(robotStartPose);
         //
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -41,7 +38,7 @@ public final class Autos {
             }
     }
   //
-  public Command AutoPrototype1(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, 
+  public Command AutoPrototype1(Drivetrain drivetrain, PathCommands pathCommands, Boolean fieldRelative, Double m_period, 
     Robot robot, Double targetYaw) { // figure out how running this is gonna work,
         // - you'll probably need to get rid of the parameters and have the Autos.java file
         // - deal with it itself
@@ -62,8 +59,8 @@ public final class Autos {
         return Commands.sequence(
             Commands.run(() -> {
                     List<Double> values = PathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0));
-                    PathCommands.setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
-            }).until(() -> PathCommands.CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
+                    pathCommands.setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+            }).until(() -> pathCommands.CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
             //
             Commands.run(() -> {
                 // run intake for 5 seconds

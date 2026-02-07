@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.VisionSubsystem;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.SubsystemCommands;
 
-public class VisionSubsystem {
+public class Vision {
     //
     private Rotation2d zeroRotation = Rotation2d.kZero;
     public final PhotonCamera camera0; // needs callibrated
@@ -37,7 +37,7 @@ public class VisionSubsystem {
     public double targetRange = 0.0;
     public boolean targetVisible = false;
 
-    public VisionSubsystem()  {
+    public Vision()  {
         AprilTagPoses = Arrays.asList();
         kPVision_Turn = -.03;
         targetYaw = (0.0);

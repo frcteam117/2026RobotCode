@@ -21,28 +21,33 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Swerve.SwerveConstants;
 import frc.robot.Swerve.SwerveModuleSimulation;
 import frc.robot.commands.*;
-import frc.robot.generated.SwerveConstants;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.VisionSubsystem.cameraData;
+import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
+import frc.robot.subsystems.IndexerSubsystem.Indexer;
+import frc.robot.subsystems.IntakeSubsystem.Intake;
+import frc.robot.subsystems.ShooterSubsystem.Shooter;
+import frc.robot.subsystems.VisionSubsystem.Vision;
+import frc.robot.subsystems.VisionSubsystem.Vision.cameraData;
 import frc.robot.util.PathUtil;
 public class RobotContainer {
-
-  // Driver controller
-  private final PS5Controller m_controller = new PS5Controller(0);
   private final Navx navX = new Navx(0, 100); // rate in Hz
+  private final Drivetrain drivetrain = new Drivetrain(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
+  //private final Indexer indexer = new Indexer();
+  //private final Intake intake = new Intake();
+  //private final Shooter shooter = new Shooter(); // make one for hood separate from shooter?
+  private final Vision vision = new Vision();
+//  
+  private final PS5Controller m_controller = new PS5Controller(0);
   //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
   //inputs.yawPosition = navX.getRotation2d().unaryMinus();
   //
   private final Robot robot = new Robot();
-
   private final PathUtil pathUtil = new PathUtil();
-
-  private final VisionSubsystem visionSubsystem =  new VisionSubsystem();
   private final SubsystemCommands subsystemCommands = new SubsystemCommands();
 
-  private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   //private final DrivetrainSubsystem m_swerve = SubsystemCommands.drivetrainSubsystem;//new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   private final SwerveModuleSimulation swerveModuleSim = new SwerveModuleSimulation();
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
@@ -95,6 +100,9 @@ public class RobotContainer {
     configureBindings();
     configureDefaultCommands();
     //
+    navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
+
+    //
     pathRunning = false;
     SmartDashboard.putBoolean("running Path1Command",true);
     AprilTagPoses = Arrays.asList();
@@ -104,7 +112,7 @@ public class RobotContainer {
     camera2 = new PhotonCamera("PC_Camera2");
     Rotation2d originRot = new Rotation2d(0);
     Pose2d origin = new Pose2d(0,0,originRot);
-    m_swerve.resetOdometry(origin);
+    drivetrain.resetOdometry(origin);
     //
     
     for (int i = 1; i < 33; i++) { // 33 because 32 tags, index 0 will return a safe Null
@@ -119,12 +127,12 @@ public class RobotContainer {
     new JoystickButton(m_controller, PS5Controller.Button.kCircle.value) //getting path from current visible tag(s)
     //- in case of multiple, it'll use the last one in the results sequence
          .whileTrue(pathUtil.getPathFromTagID(
-            visionSubsystem.getCameraResults().AprilTagID(), m_swerve, true, robot.getPeriod(), robot, targetYaw));
+            vision.getCameraResults().AprilTagID(), drivetrain, true, robot.getPeriod(), robot, targetYaw));
   }
 
   private void configureDefaultCommands() {
     // Default drive command: run every scheduler cycle in teleop
-    m_swerve.setDefaultCommand(
+    drivetrain.setDefaultCommand(
         new RunCommand(
             () -> {
               // Get the x speed. We are inverting this because Xbox controllers return
@@ -149,13 +157,13 @@ public class RobotContainer {
               final var rot =
                   -m_rotLimiter.calculate(
                           MathUtil.applyDeadband(m_controller.getRightX(), 0.05))
-                      * DrivetrainSubsystem.kMaxAngularSpeed;
+                      * Drivetrain.kMaxAngularSpeed;
 
               // Command the drivetrain. 0.02 is the nominal TimedRobot loop period (20 ms).
-              m_swerve.drive(xSpeed, ySpeed, rot, true, 0.02);
+              drivetrain.drive(xSpeed, ySpeed, rot, true, 0.02);
               // m_simSwerve.drive(xSpeed, ySpeed, rot, true, 0.02);
             },
-            m_swerve));
+            drivetrain));
   }
 
   /** Replace this with your real autonomous routine later. */
@@ -165,8 +173,8 @@ public class RobotContainer {
   }
 
   // Optional: expose drivetrain / controller if you need them elsewhere
-  public DrivetrainSubsystem getDrivetrain() {
-    return m_swerve;
+  public Drivetrain getDrivetrain() {
+    return drivetrain;
   }
 
   public PS5Controller getDriverController() {

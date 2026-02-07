@@ -3,7 +3,7 @@ package frc.robot;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.generated.SwerveConstants.GyroType;
+import frc.robot.Swerve.SwerveConstants.GyroType;
 
 interface GyroSupplier {
   Rotation2d getRotation2d();

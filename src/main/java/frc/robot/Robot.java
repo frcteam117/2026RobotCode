@@ -27,10 +27,9 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.generated.SwerveConstants;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.VisionSubsystem.cameraData;
+import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
+import frc.robot.subsystems.VisionSubsystem.Vision;
+import frc.robot.subsystems.VisionSubsystem.Vision.cameraData;
 import frc.robot.util.PathUtil;
 import frc.robot.util.logging.LogUtil;
 import edu.wpi.first.math.util.Units;
@@ -38,6 +37,7 @@ import edu.wpi.first.math.util.Units;
 import java.util.Arrays;
 import java.util.List;
 
+import frc.robot.Swerve.SwerveConstants;
 import frc.robot.Swerve.SwerveModuleSimulation;
 //import frc.robot.subsystems.*;
 import frc.robot.commands.*;
@@ -58,9 +58,6 @@ import org.photonvision.PhotonUtils;
 
 public class Robot extends TimedRobot {
   // private final XboxController m_controller = new XboxController(0);
-  private final PS5Controller m_controller = new PS5Controller(0);
-  private final Navx navX = new Navx(0, 100); 
-  private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   Pose2d curPose;
   double curX;
   double curY;
@@ -69,14 +66,14 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(9);
 
   public Robot() {
-    navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
+    //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
     //
   
   }
   @Override
   public void robotPeriodic() {
       // This runs in all robot modes (disabled, auto, teleop, test)
-      m_swerve.periodic();
+      drivetrain.periodic();
       LogUtil.getInstance().runUpdateMethods();
       CommandScheduler.getInstance().run();
   } 
@@ -84,12 +81,12 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   @Override
   public void autonomousPeriodic() {
     driveWithJoystick(false);
-    m_swerve.updateOdometry();
+    drivetrain.updateOdometry();
   }
 
   @Override
   public void teleopPeriodic() {
-    curPose = m_swerve.getPose();
+    curPose = drivetrain.getPose();
     curX = curPose.getX();
     curY = curPose.getY();
     //curRot = curPose.getRotation();
@@ -99,14 +96,14 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
     }
 
     if (m_controller.getCrossButton()) {
-        m_swerve.setX();
+        drivetrain.setX();
     } else {
     driveWithJoystick(true);
     }
     
     //
     // if (m_controller.getCircleButton()) { // trigger pathCommands without cameras attached
-    //     Command command = pathUtil.getPathFromTagID(1, m_swerve, true, getPeriod(), this, targetYaw); // is targetYaw right here?
+    //     Command command = pathUtil.getPathFromTagID(1, drivetrain, true, getPeriod(), this, targetYaw); // is targetYaw right here?
     //     if (!command.isScheduled()) {
     //         System.out.println("command scheduled");
     //         command.schedule();
@@ -122,7 +119,7 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   @Override
   public void simulationPeriodic() {
         
-        m_swerve.updateSimModules();
+        drivetrain.updateSimModules();
   }
   
   private void setSwerve(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -138,99 +135,15 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
     double c =
         m_rotLimiter.calculate(MathUtil.applyDeadband(rot, 0.04))
             * 1.4;
-    m_swerve.drive(a, b, c, fieldRelative, getPeriod());
+    drivetrain.drive(a, b, c, fieldRelative, getPeriod());
   }
 
   private void driveWithJoystick(boolean fieldRelative) {
         fieldRelative = true;
         //targetYaw = 0;
             setSwerve(-m_controller.getLeftY(), -m_controller.getLeftX(), -m_controller.getRightX(), fieldRelative);
-        //setSwerve(0,0,0, fieldRelative);
-        //curCameraResults = visionSubsystem.getCameraResults();
-        /*if (m_controller.getCircleButton()) {
-            subsystemCommands.GetStartPoseFromVisibleAprilTags();
-        }
-
-        if (m_controller.getTriangleButton()) {
-            SmartDashboard.putBoolean("triangle down", true);
-            SmartDashboard.putNumber("check #",0);
-        }
-        else {
-            SmartDashboard.putBoolean("triangle down", false);
-        }
-        SmartDashboard.putBoolean("target visible", targetVisible);
-        if (!targetVisible) {
-            //curAprilTagID = 0;
-        }*/
-
-        // Auto-align when requested
-        /* 
-        if (m_controller.getTriangleButton()) {
-            visionSubsystem.getCameraResults();
-            SmartDashboard.putNumber("check #",1);
-            fieldRelative = true;
-            
-            if (targetRange > 2 && targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
-                SmartDashboard.putNumber("check #",2);
-                SmartDashboard.putBoolean("aligning to tag",true);
-                double xSpeed =
-                    -m_xspeedLimiter.calculate(MathUtil.applyDeadband(targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
-                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC
-                    * 0.4;
-                double ySpeed =
-                    -m_yspeedLimiter.calculate(MathUtil.applyDeadband(targetYaw * kPVision_Turn, 0.03))
-                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC
-                    * 0.4;
-                    //SmartDashboard.putBoolean("setSwerve",true);
-                    setSwerve(xSpeed, ySpeed, 0, fieldRelative); // should rot be rot not 0 here?
-            }
-            else { // if not aligning to target
-                //pathTimerStop = PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod()).pathTimerStops().get(curPathStep-1);
-                SmartDashboard.putNumber("check #",3);
-                if (targetVisible) {
-                    SmartDashboard.putNumber("check #",4);
-                    if (!pathRunning) { // start path
-                        SmartDashboard.putNumber("check #",5);
-                        Command command = pathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this, targetYaw); // is targetYaw right here?
-                        if (!command.isScheduled()) {
-                            System.out.println("command scheduled");
-                            command.schedule();
-                        }
-                        else {
-                            System.out.println("command already scheduled");
-                        }
-                        //PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this, targetYaw); // is targetYaw right here?
-                        pathRunning = true;
-                        //Command a = () -> curPathCommand.schedule();
-                        //curPathCommand = {() -> PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this)};
-
-                    }
-                }
-                else if (pathRunning) {
-                    //PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this, targetYaw); // is targetYaw right here?
-                }
-            }
-        }
-        else {
-            fieldRelative = true;
-            targetYaw = 0;
-            setSwerve(-m_controller.getLeftY(), -m_controller.getLeftX(), -m_controller.getRightX(), fieldRelative);
-            //curAprilTagID = 0;
-        }
-        
-               */     
   }
   private void manualControl() {
-   //m_swerve.manualDrive(m_controller.getLeftY(), m_controller.getRightX());
+   //drivetrain.manualDrive(m_controller.getLeftY(), m_controller.getRightX());
   }
 }
-/*
-if (targetVisible) {
-
-}
-
-
-
-
-
-*/

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.ShooterSubsystem;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
@@ -46,22 +46,22 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
-public class IntakeSubsystem extends SubsystemBase
+public class Shooter extends SubsystemBase
 {
 
-  private final SparkMax intakeMotor = new SparkMax(13, MotorType.kBrushless);
-  private final SparkMax intakeDeployMotor = new SparkMax(14, MotorType.kBrushless);
+  private final SparkMax leftShooterMotor = new SparkMax(15, MotorType.kBrushless);
+  private final SparkMax rightShooterMotor = new SparkMax(16, MotorType.kBrushless);
   //  private final SmartMotorControllerTelemetryConfig motorTelemetryConfig = new SmartMotorControllerTelemetryConfig()
 //          .withMechanismPosition()
 //          .withRotorPosition()
 //          .withMechanismLowerLimit()
 //          .withMechanismUpperLimit();
-  private final SmartMotorControllerConfig intakeMotorConfig = new SmartMotorControllerConfig(this)
+  private final SmartMotorControllerConfig shooterMotorConfig = new SmartMotorControllerConfig(this)
       .withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
 //      .withExternalEncoder(armMotor.getAbsoluteEncoder())
       .withIdleMode(MotorMode.COAST)
-      .withTelemetry("IntakeMotor", TelemetryVerbosity.HIGH)
+      .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
 //      .withSpecificTelemetry("ArmMotor", motorTelemetryConfig)
       .withStatorCurrentLimit(Amps.of(40))
 //      .withVoltageCompensation(Volts.of(12))
@@ -71,13 +71,39 @@ public class IntakeSubsystem extends SubsystemBase
       .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
       .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
       .withControlMode(ControlMode.CLOSED_LOOP);
-   private final SmartMotorControllerConfig intakeDeployMotorConfig = new SmartMotorControllerConfig(this)
+  //
+  private final SmartMotorController leftShooterMotorController = new SparkWrapper(leftShooterMotor, DCMotor.getNEO(1), shooterMotorConfig);
+  private final SmartMotorController rightShooterMotorController = new SparkWrapper(rightShooterMotor, DCMotor.getNEO(1), shooterMotorConfig);
+
+  private final FlyWheelConfig leftShooterConfig = new FlyWheelConfig(leftShooterMotorController)
+      .withDiameter(Inches.of(4))
+      .withMass(Pounds.of(1))
+      .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH)
+      .withSoftLimit(RPM.of(-500), RPM.of(500))
+      .withSpeedometerSimulation(RPM.of(750));
+  private final FlyWheelConfig rightShooterConfig = new FlyWheelConfig(rightShooterMotorController)
+      .withDiameter(Inches.of(4))
+      .withMass(Pounds.of(1))
+      .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH)
+      .withSoftLimit(RPM.of(-500), RPM.of(500))
+      .withSpeedometerSimulation(RPM.of(750));
+
+
+  private final FlyWheel leftShooter = new FlyWheel(leftShooterConfig);
+  private final FlyWheel rightShooter = new FlyWheel(rightShooterConfig);
+  private final SparkMax hoodMotor = new SparkMax(11, MotorType.kBrushless);
+    //  private final SmartMotorControllerTelemetryConfig motorTelemetryConfig = new SmartMotorControllerTelemetryConfig()
+//          .withMechanismPosition()
+//          .withRotorPosition()
+//          .withMechanismLowerLimit()
+//          .withMechanismUpperLimit();
+  private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
       .withClosedLoopController(4, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
       .withSoftLimit(Degrees.of(-30), Degrees.of(100))
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
 //      .withExternalEncoder(armMotor.getAbsoluteEncoder())
       .withIdleMode(MotorMode.BRAKE)
-      .withTelemetry("IntakeDeployMotor", TelemetryVerbosity.HIGH)
+      .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
 //      .withSpecificTelemetry("ArmMotor", motorTelemetryConfig)
       .withStatorCurrentLimit(Amps.of(40))
 //      .withVoltageCompensation(Volts.of(12))
@@ -86,24 +112,18 @@ public class IntakeSubsystem extends SubsystemBase
       .withOpenLoopRampRate(Seconds.of(0.25))
       .withFeedforward(new ArmFeedforward(0, 0, 0, 0))
       .withControlMode(ControlMode.CLOSED_LOOP);
-  //========
-    private final MechanismPositionConfig robotToMechanism = new MechanismPositionConfig()
+    //
+    private final SmartMotorController hoodMotorController = new SparkWrapper(hoodMotor,
+        DCMotor.getNEO(1),
+        hoodMotorConfig);
+
+  private final MechanismPositionConfig robotToMechanism = new MechanismPositionConfig()
       .withMaxRobotHeight(Meters.of(1.5))
       .withMaxRobotLength(Meters.of(0.75))
       .withRelativePosition(new Translation3d(Meters.of(0.25), Meters.of(0), Meters.of(0.5)));
 
 
-  //
-  private final SmartMotorController intakeMotorController = new SparkWrapper(intakeMotor, DCMotor.getNEO(1), intakeMotorConfig);
-  private final SmartMotorController intakeDeployMotorController = new SparkWrapper(intakeDeployMotor, DCMotor.getNEO(1), intakeDeployMotorConfig);
-
-  private final FlyWheelConfig intakeConfig = new FlyWheelConfig(intakeMotorController)
-      .withDiameter(Inches.of(4))
-      .withMass(Pounds.of(1))
-      .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH)
-      .withSoftLimit(RPM.of(-500), RPM.of(500))
-      .withSpeedometerSimulation(RPM.of(750));
-  private final ArmConfig intakeDeployConfig = new ArmConfig(intakeDeployMotorController)
+  private ArmConfig m_hoodConfig = new ArmConfig(hoodMotorController)
       .withLength(Meters.of(0.135))
       .withHardLimit(Degrees.of(-100), Degrees.of(200))
       .withTelemetry("ArmExample", TelemetryVerbosity.HIGH)
@@ -112,41 +132,60 @@ public class IntakeSubsystem extends SubsystemBase
       //.withHorizontalZero(Degrees.of(0))
       .withMechanismPositionConfig(robotToMechanism);
 
+  private final Arm hood = new Arm(m_hoodConfig);
 
-  private final FlyWheel intake = new FlyWheel(intakeConfig);
-  private final Arm intakeDeploy = new Arm(intakeDeployConfig);
+  public Command hoodCmd(double dutycycle)
+  {
+    return hood.set(dutycycle);
+  }
 
-  public IntakeSubsystem() {
+  public Command sysId()
+  {
+    return hood.sysId(Volts.of(3), Volts.of(3).per(Second), Second.of(30));
+  }
+
+  public Command setAngle(Angle angle)
+  {
+    return hood.setAngle(angle);
+  }
+  public Angle getAngle()
+  {
+    return hood.getAngle();
+  }
+  public Shooter() {
 
   }
 
-  public AngularVelocity getIntakeVelocity() {return intake.getSpeed();}
-  public Angle getIntakeDeployAngle() {return intakeDeploy.getAngle();}
+  public AngularVelocity getLeftShooterVelocity() {return leftShooter.getSpeed();}
+  public AngularVelocity getRightShooterVelocity() {return rightShooter.getSpeed();}
 
-  public Command setIntakeVelocity(AngularVelocity speed) {return intake.setSpeed(speed);}
-  public Command setIntakeDeployAngle(Angle angle) {return intakeDeploy.setAngle(angle);}
+  public Command setLeftShooterVelocity(AngularVelocity speed) {return leftShooter.setSpeed(speed);}
+  public Command setRightShooterVelocity(AngularVelocity speed) {return rightShooter.setSpeed(speed);}
 
-  public Command setIntakeDutyCycle(double dutyCycle) {return intake.set(dutyCycle);}
-  public Command setIntakeDeployDutyCycle(double dutyCycle) {return intakeDeploy.set(dutyCycle);}
+  public Command setLeftShooterDutyCycle(double dutyCycle) {return leftShooter.set(dutyCycle);}
+  public Command setRightShooterDutyCycle(double dutyCycle) {return rightShooter.set(dutyCycle);}
 
-  //public Command setLeftShooterVelocity(Supplier<AngularVelocity> speed) {return leftShooter.setSpeed(speed);}
-  //public Command setRightShooterVelocity(Supplier<AngularVelocity> speed) {return rightShooter.setSpeed(speed);}
+  public Command setLeftShooterVelocity(Supplier<AngularVelocity> speed) {return leftShooter.setSpeed(speed);}
+  public Command setRightShooterVelocity(Supplier<AngularVelocity> speed) {return rightShooter.setSpeed(speed);}
 
-  //public Command setLeftShooterDutyCycle(Supplier<Double> dutyCycle) {return leftShooter.set(dutyCycle);}
-  //public Command setRightShooterDutyCycle(Supplier<Double> dutyCycle) {return rightShooter.set(dutyCycle);}
+  public Command setLeftShooterDutyCycle(Supplier<Double> dutyCycle) {return leftShooter.set(dutyCycle);}
+  public Command setRightShooterDutyCycle(Supplier<Double> dutyCycle) {return rightShooter.set(dutyCycle);}
 
-  public Command intakeSysId() {return intake.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
-  public Command intakeDeploySysId() {return intakeDeploy.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
+  public Command leftShooterSysId() {return leftShooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
+  public Command rightShooterSysId() {return rightShooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
 
   @Override
   public void periodic() {
-      intake.updateTelemetry();
-      intakeDeploy.updateTelemetry();
+      leftShooter.updateTelemetry();
+      rightShooter.updateTelemetry();
+      hood.updateTelemetry();
     }
 
   @Override
   public void simulationPeriodic() {
-      intake.simIterate();
-      intakeDeploy.simIterate();
+      leftShooter.simIterate();
+      rightShooter.simIterate();
+      hood.simIterate();
   }
+
 }

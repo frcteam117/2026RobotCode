@@ -37,24 +37,19 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.generated.SwerveConstants;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.IndexerSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.Swerve.SwerveConstants;
+import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
+import frc.robot.subsystems.IndexerSubsystem.Indexer;
+import frc.robot.subsystems.IndexerSubsystem.IndexerConstants;
+import frc.robot.subsystems.IntakeSubsystem.Intake;
+import frc.robot.subsystems.IntakeSubsystem.IntakeConstants;
+import frc.robot.subsystems.ShooterSubsystem.HoodConstants;
+import frc.robot.subsystems.ShooterSubsystem.Shooter;
+import frc.robot.subsystems.VisionSubsystem.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 //
 import edu.wpi.first.wpilibj.Timer;
-
-//
-//
-import frc.robot.generated.IntakeConstants;
-import frc.robot.generated.HoodConstants;
-import frc.robot.generated.IndexerConstants;
-import frc.robot.generated.SwerveConstants;
-//
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -116,12 +111,12 @@ public class SubsystemCommands {
     // if (alliance.get() ==  Alliance.[Red/Blue]) {
     //};
   //
-    public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private static final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
-    public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+    public final Drivetrain drivetrainSubsystem = new Drivetrain(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private static final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
+    public static final Intake intakeSubsystem = new Intake();
+    public static final Shooter shooterSubsystem = new Shooter();
     
      //public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-    public static final IndexerSubsystem hopperSubsystem = new IndexerSubsystem();
+    public static final Indexer hopperSubsystem = new Indexer();
     //=====
     
     
@@ -132,7 +127,7 @@ public class SubsystemCommands {
     public static Command BlankCommand() {
         return Commands.runOnce( () -> {});
     }
-    public static Command StopSwerve(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period) {
+    public static Command StopSwerve(Drivetrain drivetrain, Boolean fieldRelative, Double m_period) {
         //Drivetrain m_swerve,
         return Commands.runOnce( () -> {
                 drivetrain.drive(0.0, 0.0, 0.0, fieldRelative, m_period); // add way to stop the robot?????
