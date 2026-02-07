@@ -1,21 +1,79 @@
 package frc.robot;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.photonvision.PhotonCamera;
+
+import com.studica.frc.Navx;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PS5Controller;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Swerve.SwerveModuleSimulation;
 import frc.robot.commands.*;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.VisionSubsystem.cameraData;
+import frc.robot.util.PathUtil;
 public class RobotContainer {
 
   // Driver controller
   private final PS5Controller m_controller = new PS5Controller(0);
+  private final Navx navX = new Navx(0, 100); // rate in Hz
+  //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
+  //inputs.yawPosition = navX.getRotation2d().unaryMinus();
+  //
+  private final Robot robot = new Robot();
 
+  private final PathUtil pathUtil = new PathUtil();
+
+  private final VisionSubsystem visionSubsystem =  new VisionSubsystem();
+  private final SubsystemCommands subsystemCommands = new SubsystemCommands();
+
+  private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
+  //private final DrivetrainSubsystem m_swerve = SubsystemCommands.drivetrainSubsystem;//new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
+  private final SwerveModuleSimulation swerveModuleSim = new SwerveModuleSimulation();
+  // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
+    // 
+  private Rotation2d zeroRotation = Rotation2d.kZero;
+  public final PhotonCamera camera0; // needs callibrated
+  public final PhotonCamera camera2;
+  //public record cameraData = visionSubsystem.cameraData; // FIXXXXX
+
+  public cameraData curCameraResults;
+  Timer timer;
+  //Timer timer = new Timer();
+  AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+  public static List<Pose3d> AprilTagPoses;
+
+  //
+  List<Integer> aprilTagIDs = Arrays.asList(1, 2, 3); // do we need this?????? maybe get rid of it <---------------------
+  public static int curAprilTagID = 0;
+  public static boolean targetVisible = false;
+  public static double targetYaw = 0;
+  public static double targetRange; // from photonvision docs
+  public static double kPVision_Turn;
+  
+  Pose2d curPose;
+  double curX;
+  double curY;
+  //Rotation2d curRot;
+
+  int curPathStep = 1;
+
+  public static boolean pathRunning = false;
   // Gyro supplier created via factory and constants
   private final GyroSupplier m_gyro =
       GyroFactory.createGyro(
@@ -23,26 +81,45 @@ public class RobotContainer {
           SwerveConstants.GyroConstants.GYRO_PARAMS);
 
   // Swerve drivetrain subsystem
-  private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(m_gyro::getRotation2d, new Pose2d());
   private final PathCommands pathCommands = new PathCommands();
-  private final SubsystemCommands subsystemCommands = new SubsystemCommands();
+  //private final SubsystemCommands subsystemCommands = new SubsystemCommands();
 
   // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(20);
-  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(20);
-  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(20);
+  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
+  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(1);
+  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(9);
 
   public RobotContainer() {
     configureBindings();
     configureDefaultCommands();
+    //
+    pathRunning = false;
+    SmartDashboard.putBoolean("running Path1Command",true);
+    AprilTagPoses = Arrays.asList();
+    kPVision_Turn = -.03;
+    targetYaw = (0.0);
+    camera0 = new PhotonCamera("PC_Camera0");
+    camera2 = new PhotonCamera("PC_Camera2");
+    Rotation2d originRot = new Rotation2d(0);
+    Pose2d origin = new Pose2d(0,0,originRot);
+    m_swerve.resetOdometry(origin);
+    //
+    
+    for (int i = 1; i < 33; i++) { // 33 because 32 tags, index 0 will return a safe Null
+        Pose3d tagPose = kTagLayout.getTagPose(i).orElse(new Pose3d()); 
+        SmartDashboard.putNumber("tagPose X",tagPose.getX());
+        //AprilTagPoses.add(tagPose);
+    }
   }
 
-  private void configureBindings() { //TODO: CONFIGURE BUTTON BINDINGS!!!, fix susbystem organization
+  private void configureBindings() { //TODO: CONFIGURE BUTTON BINDINGS!!!, fix subsystem organization
     // Example for later:
-     //m_controller.cross(null).while(subsystemCommands.BlankCommand().schedule()); // doesn't do anything, placeholder
-     // - till subsystem commands are connected to real motors
+    new JoystickButton(m_controller, PS5Controller.Button.kCircle.value) //getting path from current visible tag(s)
+    //- in case of multiple, it'll use the last one in the results sequence
+         .whileTrue(pathUtil.getPathFromTagID(
+            visionSubsystem.getCameraResults().AprilTagID(), m_swerve, true, robot.getPeriod(), robot, targetYaw));
   }
 
   private void configureDefaultCommands() {

@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
@@ -48,8 +49,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 //
 import edu.wpi.first.wpilibj.Timer;
 
-import frc.robot.subsystems.ClimberSubsystem;
-
+//
 //
 import frc.robot.generated.ClimberConstants;
 import frc.robot.generated.HoodConstants;
@@ -121,7 +121,7 @@ public class SubsystemCommands {
     public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     
-     public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+     //public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
      public static final HoodSubsystem hoodSubsystem = new HoodSubsystem();
     public static final HopperSubsystem hopperSubsystem = new HopperSubsystem();
     //=====
@@ -292,7 +292,7 @@ public class SubsystemCommands {
                             targetRange =
                                         PhotonUtils.calculateDistanceToTargetMeters( // THESE NEED TO BE TUNED???
                                                 0.5   , // Measured with a tape measure, or in CAD.
-                                                Robot.AprilTagPoses.get(curAprilTagID).getZ(),
+                                                RobotContainer.AprilTagPoses.get(curAprilTagID).getZ(),
                                                 Units.degreesToRadians(-30.0), // Measured with a protractor, or in CAD.
                                                 Units.degreesToRadians(target.getPitch()));
                             //

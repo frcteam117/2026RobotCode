@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
@@ -55,6 +56,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -69,11 +73,7 @@ public class PathCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
   //
-  //private final SubsystemCommands subsystemCommands = new SubsystemCommands();
-  
-  //
-
-
+  //private final SubsystemCommands
   //
   public static double limiter = 1; // adjust!!
   public static double speedCap = 0.5; // adjust!!
@@ -89,15 +89,15 @@ public class PathCommands {
     //
     private static void AlignToTag(DrivetrainSubsystem drivetrain, Double m_period, Boolean fieldRelative) {
         //    change 2??? vvv
-            if (Robot.targetRange > 2 && Robot.targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
+            if (RobotContainer.targetRange > 2 && RobotContainer.targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
                 SmartDashboard.putNumber("check #",2);
                 SmartDashboard.putBoolean("aligning to tag",true);
                 double xSpeed =
-                    -m_xspeedLimiter.calculate(MathUtil.applyDeadband(Robot.targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
+                    -m_xspeedLimiter.calculate(MathUtil.applyDeadband(RobotContainer.targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
                     * SwerveConstants.TOP_SPEED_METERS_PER_SEC
                     * 0.4;
                 double ySpeed =
-                    -m_yspeedLimiter.calculate(MathUtil.applyDeadband(Robot.targetYaw * Robot.kPVision_Turn, 0.03))
+                    -m_yspeedLimiter.calculate(MathUtil.applyDeadband(RobotContainer.targetYaw * RobotContainer.kPVision_Turn, 0.03))
                     * SwerveConstants.TOP_SPEED_METERS_PER_SEC
                     * 0.4;
                     //SmartDashboard.putBoolean("setSwerve",true);
@@ -224,8 +224,8 @@ public class PathCommands {
     public Command DriveToCenterFromOrigin(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, 
     Robot robot, Double targetYaw) {
         List<Pose2d> targetPoses = Arrays.asList(new Pose2d(
-            Robot.AprilTagPoses.get(12).getX(), // go to a tag
-            Robot.AprilTagPoses.get(12).getY(),
+            RobotContainer.AprilTagPoses.get(12).getX(), // go to a tag
+            RobotContainer.AprilTagPoses.get(12).getY(),
             Rotation2d.fromDegrees(targetYaw) //does this need to be the difference of smth? idk
         ),
         new Pose2d(6.5, 0.6, Rotation2d.fromDegrees(0)),
@@ -252,8 +252,8 @@ public class PathCommands {
     public Command AutoPrototype2(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, 
     Robot robot, Double targetYaw) {
         List<Pose2d> targetPoses = Arrays.asList(new Pose2d(
-            Robot.AprilTagPoses.get(3).getX(), // go to a tag
-            Robot.AprilTagPoses.get(3).getY(),
+            RobotContainer.AprilTagPoses.get(3).getX(), // go to a tag
+            RobotContainer.AprilTagPoses.get(3).getY(),
             Rotation2d.fromDegrees(targetYaw) //does this need to be the difference of smth? idk
         ));        
         return Commands.sequence(
@@ -278,7 +278,7 @@ public class PathCommands {
         return Commands.sequence(
             Commands.run(() -> { // align to tag
                 AlignToTag(drivetrain, m_period, fieldRelative);
-            }).until(() -> (Robot.targetRange <= 2 && Robot.targetYaw <= 5)),
+            }).until(() -> (RobotContainer.targetRange <= 2 && RobotContainer.targetYaw <= 5)),
             //
             Commands.run(() -> { // align to front of hub from center start point <- DIFFERENTIATE!!!
                     List<Double> values = CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0));

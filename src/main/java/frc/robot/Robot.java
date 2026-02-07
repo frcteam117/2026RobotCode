@@ -59,87 +59,15 @@ import org.photonvision.PhotonUtils;
 public class Robot extends TimedRobot {
   // private final XboxController m_controller = new XboxController(0);
   private final PS5Controller m_controller = new PS5Controller(0);
-  private final Navx navX = new Navx(0, 100); // rate in Hz
-  //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
-  //inputs.yawPosition = navX.getRotation2d().unaryMinus();
-  //
-  private final PathUtil pathUtil = new PathUtil();
-  private final VisionSubsystem visionSubsystem =  new VisionSubsystem();
-  private final SubsystemCommands subsystemCommands = new SubsystemCommands();
-
+  private final Navx navX = new Navx(0, 100); 
   private final DrivetrainSubsystem m_swerve = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
-  //private final DrivetrainSubsystem m_swerve = SubsystemCommands.drivetrainSubsystem;//new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
-  private final SwerveModuleSimulation swerveModuleSim = new SwerveModuleSimulation();
-  // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
-  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(1);
-  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(9);
-    // 
-  private Rotation2d zeroRotation = Rotation2d.kZero;
-  public final PhotonCamera camera0; // needs callibrated
-  public final PhotonCamera camera2;
-  //public record cameraData = visionSubsystem.cameraData; // FIXXXXX
-
-  public cameraData curCameraResults;
-  Timer timer;
-  //Timer timer = new Timer();
-  AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-  public static List<Pose3d> AprilTagPoses;
-
-  //
-  List<Integer> aprilTagIDs = Arrays.asList(1, 2, 3); // do we need this?????? maybe get rid of it <---------------------
-  public static int curAprilTagID = 0;
-  public static boolean targetVisible = false;
-  public static double targetYaw = 0;
-  public static double targetRange; // from photonvision docs
-  public static double kPVision_Turn;
-  
   Pose2d curPose;
   double curX;
   double curY;
-  //Rotation2d curRot;
 
-  double pathTimerStop = 0.0;
-
-  int curPathStep = 1;
-
-  public static boolean pathRunning = false;
-
-  int totalPathSteps = 0;
-
-  Command curPathCommand;
-
-  //
-  
-  //
-
-  
-  public Robot () {
+  public Robot() {
     navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
     //
-    pathRunning = false;
-    SmartDashboard.putBoolean("running Path1Command",true);
-    AprilTagPoses = Arrays.asList();
-    kPVision_Turn = -.03;
-    targetYaw = (0.0);
-    camera0 = new PhotonCamera("PC_Camera0");
-    camera2 = new PhotonCamera("PC_Camera2");
-    Rotation2d originRot = new Rotation2d(0);
-    Pose2d origin = new Pose2d(0,0,originRot);
-    m_swerve.resetOdometry(origin);
-    //
-    
-    for (int i = 1; i < 33; i++) { // 33 because 32 tags, index 0 will return a safe Null
-        Pose3d tagPose = kTagLayout.getTagPose(i).orElse(new Pose3d()); 
-        SmartDashboard.putNumber("tagPose X",tagPose.getX());
-        //AprilTagPoses.add(tagPose);
-    }
-    
-    //
-    
-
-
-    //SmartDashboard.putNumber("AprilTag field pose - X",AprilTagPoses.get(1).getX());
   
   }
   @Override
@@ -162,7 +90,7 @@ public class Robot extends TimedRobot {
     curX = curPose.getX();
     curY = curPose.getY();
     // curRot = curPose.getRotation();
-
+/*
     if (m_controller.getSquareButtonPressed()) {
         navX.resetYaw();
     }
@@ -172,6 +100,7 @@ public class Robot extends TimedRobot {
     } else {
     driveWithJoystick(true);
     }
+    */
     //
     // if (m_controller.getCircleButton()) { // trigger pathCommands without cameras attached
     //     Command command = pathUtil.getPathFromTagID(1, m_swerve, true, getPeriod(), this, targetYaw); // is targetYaw right here?
@@ -192,7 +121,7 @@ public class Robot extends TimedRobot {
         
         m_swerve.updateSimModules();
   }
-  //
+  /* 
   private void setSwerve(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
 
     double a =
@@ -207,12 +136,12 @@ public class Robot extends TimedRobot {
         m_rotLimiter.calculate(MathUtil.applyDeadband(rot, 0.04))
             * 1.4;
     m_swerve.drive(a, b, c, fieldRelative, getPeriod());
-  }
+  }*/
 
   private void driveWithJoystick(boolean fieldRelative) {
         //setSwerve(0,0,0, fieldRelative);
         //curCameraResults = visionSubsystem.getCameraResults();
-        if (m_controller.getCircleButton()) {
+        /*if (m_controller.getCircleButton()) {
             subsystemCommands.GetStartPoseFromVisibleAprilTags();
         }
 
@@ -226,9 +155,10 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("target visible", targetVisible);
         if (!targetVisible) {
             //curAprilTagID = 0;
-        }
+        }*/
 
         // Auto-align when requested
+        /* 
         if (m_controller.getTriangleButton()) {
             visionSubsystem.getCameraResults();
             SmartDashboard.putNumber("check #",1);
@@ -281,7 +211,7 @@ public class Robot extends TimedRobot {
             setSwerve(-m_controller.getLeftY(), -m_controller.getLeftX(), -m_controller.getRightX(), fieldRelative);
             //curAprilTagID = 0;
         }
-                    
+               */     
   }
   private void manualControl() {
    //m_swerve.manualDrive(m_controller.getLeftY(), m_controller.getRightX());
