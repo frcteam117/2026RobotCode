@@ -39,7 +39,6 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -122,7 +121,6 @@ public class SubsystemCommands {
     public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     
      //public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-     public static final HoodSubsystem hoodSubsystem = new HoodSubsystem();
     public static final HopperSubsystem hopperSubsystem = new HopperSubsystem();
     //=====
     
