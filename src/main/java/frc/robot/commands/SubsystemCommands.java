@@ -50,7 +50,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 //
 //
-import frc.robot.generated.ClimberConstants;
+import frc.robot.generated.IntakeConstants;
 import frc.robot.generated.HoodConstants;
 import frc.robot.generated.IndexerConstants;
 import frc.robot.generated.SwerveConstants;
@@ -252,6 +252,7 @@ public class SubsystemCommands {
     //public static Command ClimbLevel3() {
     //===
     */
+    // ADJUST FOR CAMERA POSITION. CHECK WHICH CAMERA AND ADD OFFSET FOR CAMERA POSEs!!!!!
     public Pose2d GetStartPoseFromVisibleAprilTags(){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         // change to be for any point in game by making it dependent on the alliance side if
         // - at start and the odometry robot pose at any other point???
