@@ -39,7 +39,7 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.generated.SwerveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -52,7 +52,7 @@ import edu.wpi.first.wpilibj.Timer;
 //
 import frc.robot.generated.ClimberConstants;
 import frc.robot.generated.HoodConstants;
-import frc.robot.generated.HopperConstants;
+import frc.robot.generated.IndexerConstants;
 import frc.robot.generated.SwerveConstants;
 //
 
@@ -121,7 +121,7 @@ public class SubsystemCommands {
     public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     
      //public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-    public static final HopperSubsystem hopperSubsystem = new HopperSubsystem();
+    public static final IndexerSubsystem hopperSubsystem = new IndexerSubsystem();
     //=====
     
     
@@ -253,7 +253,8 @@ public class SubsystemCommands {
     //===
     */
     public Pose2d GetStartPoseFromVisibleAprilTags(){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
-        //
+        // change to be for any point in game by making it dependent on the alliance side if
+        // - at start and the odometry robot pose at any other point???
         var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
         SmartDashboard.putNumber("visionCheck", 111);
         Pose2d robotPose = null;

@@ -50,12 +50,12 @@ public class PathUtil {
     else if (aprilTagID == 3) {
       return pathCommands.DriveToCenterFromOrigin(drivetrain, fieldRelative, m_period, robot, m_period);
     }
-    else if (aprilTagID == 4) {
+    /*else if (aprilTagID == 4) {
       return pathCommands.AutoPrototype2(drivetrain, fieldRelative, m_period, robot, targetYaw);
     }
     else if (aprilTagID == 5) {
       return pathCommands.ShootThenClimbAuto(drivetrain, fieldRelative, m_period, robot, targetYaw);
-    }
+    }*/
     else {
       return pathCommands.BlankCommand();
     }

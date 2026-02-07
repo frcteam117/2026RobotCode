@@ -86,7 +86,7 @@ public class PathCommands {
     //
     static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     //
-    private static void AlignToTag(DrivetrainSubsystem drivetrain, Double m_period, Boolean fieldRelative) {
+    public static void AlignToTag(DrivetrainSubsystem drivetrain, Double m_period, Boolean fieldRelative) {
         //    change 2??? vvv
             if (RobotContainer.targetRange > 2 && RobotContainer.targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
                 SmartDashboard.putNumber("check #",2);
@@ -105,7 +105,7 @@ public class PathCommands {
     }
 
     //
-    private static void setSwerve(DrivetrainSubsystem drivetrain, double m_period, double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    public static void setSwerve(DrivetrainSubsystem drivetrain, double m_period, double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         double a =
         m_xspeedLimiter.calculate(MathUtil.applyDeadband(xSpeed, 0.03))
             * SwerveConstants.TOP_SPEED_METERS_PER_SEC
@@ -120,7 +120,7 @@ public class PathCommands {
         drivetrain.drive(a, b, c, fieldRelative, m_period);
     }
 
-    private static boolean CloseEnough(Pose2d curPose, Pose2d targetPose) { // gotta be a better way 2 do this but again idfk
+    public static boolean CloseEnough(Pose2d curPose, Pose2d targetPose) { // gotta be a better way 2 do this but again idfk
         double difX = targetPose.getX()-curPose.getX(); 
         double difY = targetPose.getY()-curPose.getY();
         System.out.println(difX);
@@ -141,7 +141,7 @@ public class PathCommands {
         }
     }
 
-    private static List<Double> CalcSwerveValues(Pose2d curPose, Pose2d targetPose) {
+    public static List<Double> CalcSwerveValues(Pose2d curPose, Pose2d targetPose) {
         double difX = targetPose.getX()-curPose.getX(); 
         double difY = targetPose.getY()-curPose.getY(); 
         double difRot = targetPose.getRotation().getDegrees()-curPose.getRotation().getDegrees();
@@ -248,52 +248,5 @@ public class PathCommands {
         );
     }
 
-    public Command AutoPrototype2(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, 
-    Robot robot, Double targetYaw) {
-        List<Pose2d> targetPoses = Arrays.asList(new Pose2d(
-            RobotContainer.AprilTagPoses.get(3).getX(), // go to a tag
-            RobotContainer.AprilTagPoses.get(3).getY(),
-            Rotation2d.fromDegrees(targetYaw) //does this need to be the difference of smth? idk
-        ));        
-        return Commands.sequence(
-            Commands.run(() -> {
-                    List<Double> values = CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0));
-                    setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
-            }).until(() -> CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
-            //
-            Commands.run(() -> {
-                // run intake for 5 seconds
-            }).withTimeout(5)
-        );
-    }
-    // differentiate autos into their own folder at some point!
-    // only for aligning from in front of hub start, add differentiation! <---------
-    public Command ShootThenClimbAuto(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, 
-    Robot robot, Double targetYaw) {
-        List<Pose2d> targetPoses = Arrays.asList(
-            new Pose2d(1.678, 3.75, Rotation2d.fromDegrees(0)),
-            new Pose2d(1.438, 3.745, Rotation2d.fromDegrees(-180))
-        );
-        return Commands.sequence(
-            Commands.run(() -> { // align to tag
-                AlignToTag(drivetrain, m_period, fieldRelative);
-            }).until(() -> (RobotContainer.targetRange <= 2 && RobotContainer.targetYaw <= 5)),
-            //
-            Commands.run(() -> { // align to front of hub from center start point <- DIFFERENTIATE!!!
-                    List<Double> values = CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0));
-                    setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
-            }).until(() -> CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
-            //
-            Commands.runOnce(() -> { // shoots all fuel (runs both shooter for 5 sec, maybe add sensor input idk)
-                //SubsystemCommands.RunLeftShooter();
-                //SubsystemCommands.RunRightShooter();
-            }).withTimeout(5),
-            //
-            Commands.run(() -> { // drives to tower
-                    List<Double> values = CalcSwerveValues(drivetrain.getPose(), targetPoses.get(1));
-                    setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
-            }).until(() -> CloseEnough(drivetrain.getPose(),targetPoses.get(0)))
-            // next put climbing code
-        );
-    }
+    
 }
