@@ -180,4 +180,7 @@ public class RobotContainer {
   public PS5Controller getDriverController() {
     return m_controller;
   }
+  public Navx getGyro() {
+    return navX;
+  }
 }

@@ -86,7 +86,7 @@ public class PathCommands {
     //
     static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     //
-    public static void AlignToTag(Drivetrain drivetrain, Double m_period, Boolean fieldRelative) {
+    public void AlignToTag(Drivetrain drivetrain, Double m_period, Boolean fieldRelative) {
         //    change 2??? vvv
             if (RobotContainer.targetRange > 2 && RobotContainer.targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
                 SmartDashboard.putNumber("check #",2);
@@ -105,7 +105,7 @@ public class PathCommands {
     }
 
     //
-    public static void setSwerve(Drivetrain drivetrain, double m_period, double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    public void setSwerve(Drivetrain drivetrain, double m_period, double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         double a =
         m_xspeedLimiter.calculate(MathUtil.applyDeadband(xSpeed, 0.03))
             * SwerveConstants.TOP_SPEED_METERS_PER_SEC
@@ -120,7 +120,7 @@ public class PathCommands {
         drivetrain.drive(a, b, c, fieldRelative, m_period);
     }
 
-    public static boolean CloseEnough(Pose2d curPose, Pose2d targetPose) { // gotta be a better way 2 do this but again idfk
+    public boolean CloseEnough(Pose2d curPose, Pose2d targetPose) { // gotta be a better way 2 do this but again idfk
         double difX = targetPose.getX()-curPose.getX(); 
         double difY = targetPose.getY()-curPose.getY();
         System.out.println(difX);
@@ -141,7 +141,7 @@ public class PathCommands {
         }
     }
 
-    public static List<Double> CalcSwerveValues(Pose2d curPose, Pose2d targetPose) {
+    public List<Double> CalcSwerveValues(Pose2d curPose, Pose2d targetPose) {
         double difX = targetPose.getX()-curPose.getX(); 
         double difY = targetPose.getY()-curPose.getY(); 
         double difRot = targetPose.getRotation().getDegrees()-curPose.getRotation().getDegrees();

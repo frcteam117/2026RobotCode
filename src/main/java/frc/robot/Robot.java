@@ -58,6 +58,10 @@ import org.photonvision.PhotonUtils;
 
 public class Robot extends TimedRobot {
   // private final XboxController m_controller = new XboxController(0);
+  RobotContainer robotContainer = new RobotContainer();
+  Drivetrain drivetrain = robotContainer.getDrivetrain();
+  PS5Controller m_controller = robotContainer.getDriverController();
+  Navx navX =  robotContainer.getGyro();
   Pose2d curPose;
   double curX;
   double curY;

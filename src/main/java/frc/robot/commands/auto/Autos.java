@@ -19,7 +19,6 @@ import frc.robot.commands.PathCommands;
 import frc.robot.commands.SubsystemCommands;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
-import frc.robot.subsystems.DrivetrainSubsystem.DrivetrainSubsystem;
 //
 public final class Autos {
     Pose2d robotStartPose;
