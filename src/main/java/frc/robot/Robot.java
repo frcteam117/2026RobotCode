@@ -64,6 +64,9 @@ public class Robot extends TimedRobot {
   Pose2d curPose;
   double curX;
   double curY;
+private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
+  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(1);
+  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(9);
 
   public Robot() {
     navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
@@ -121,7 +124,7 @@ public class Robot extends TimedRobot {
         
         m_swerve.updateSimModules();
   }
-  /* 
+  
   private void setSwerve(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
 
     double a =
@@ -136,9 +139,12 @@ public class Robot extends TimedRobot {
         m_rotLimiter.calculate(MathUtil.applyDeadband(rot, 0.04))
             * 1.4;
     m_swerve.drive(a, b, c, fieldRelative, getPeriod());
-  }*/
+  }
 
   private void driveWithJoystick(boolean fieldRelative) {
+        fieldRelative = true;
+        //targetYaw = 0;
+            setSwerve(-m_controller.getLeftY(), -m_controller.getLeftX(), -m_controller.getRightX(), fieldRelative);
         //setSwerve(0,0,0, fieldRelative);
         //curCameraResults = visionSubsystem.getCameraResults();
         /*if (m_controller.getCircleButton()) {
@@ -211,6 +217,7 @@ public class Robot extends TimedRobot {
             setSwerve(-m_controller.getLeftY(), -m_controller.getLeftX(), -m_controller.getRightX(), fieldRelative);
             //curAprilTagID = 0;
         }
+        
                */     
   }
   private void manualControl() {
