@@ -40,7 +40,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
-public class HopperSubsystem extends SubsystemBase
+public class IndexerSubsystem extends SubsystemBase
 {     // adjust device IDs, obviously
   private final SparkMax hopperMotor = new SparkMax(12, MotorType.kBrushless);
     //  private final SmartMotorControllerTelemetryConfig motorTelemetryConfig = new SmartMotorControllerTelemetryConfig()
@@ -117,7 +117,7 @@ public class HopperSubsystem extends SubsystemBase
   private final Arm hopper = new Arm(m_hopperConfig);
   private final FlyWheel kicker = new FlyWheel(m_kickerConfig);
 
-  public HopperSubsystem()
+  public IndexerSubsystem()
   {
   }
 
