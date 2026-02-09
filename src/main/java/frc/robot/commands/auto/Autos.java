@@ -17,7 +17,6 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.PathCommands;
 import frc.robot.commands.SubsystemCommands;
-import frc.robot.subsystems.*;
 import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
 //
 public final class Autos {
@@ -36,7 +35,7 @@ public final class Autos {
             } else {
             }
     }
-  //
+  //do we have to pass pathCommands? IDEFKATPBRO
   public Command AutoPrototype1(Drivetrain drivetrain, PathCommands pathCommands, Boolean fieldRelative, Double m_period, 
     Robot robot, Double targetYaw) { // figure out how running this is gonna work,
         // - you'll probably need to get rid of the parameters and have the Autos.java file
@@ -57,7 +56,7 @@ public final class Autos {
         ));
         return Commands.sequence(
             Commands.run(() -> {
-                    List<Double> values = PathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0));
+                    List<Double> values = pathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0));
                     pathCommands.setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
             }).until(() -> pathCommands.CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
             //

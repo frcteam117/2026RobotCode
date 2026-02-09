@@ -24,13 +24,11 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Swerve.SwerveConstants;
 import frc.robot.Swerve.SwerveModuleSimulation;
 import frc.robot.commands.*;
-import frc.robot.subsystems.*;
-import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
-import frc.robot.subsystems.IndexerSubsystem.Indexer;
-import frc.robot.subsystems.IntakeSubsystem.Intake;
-import frc.robot.subsystems.ShooterSubsystem.Shooter;
-import frc.robot.subsystems.VisionSubsystem.Vision;
-import frc.robot.subsystems.VisionSubsystem.Vision.cameraData;
+import frc.robot.subsystems.DrivetrainSubsystem.*;
+import frc.robot.subsystems.IndexerSubsystem.*;
+import frc.robot.subsystems.IntakeSubsystem.*;
+import frc.robot.subsystems.ShooterSubsystem.*;
+import frc.robot.subsystems.VisionSubsystem.*;
 import frc.robot.util.PathUtil;
 public class RobotContainer {
   private final Navx navX = new Navx(0, 100); // rate in Hz
@@ -57,7 +55,7 @@ public class RobotContainer {
   public final PhotonCamera camera2;
   //public record cameraData = visionSubsystem.cameraData; // FIXXXXX
 
-  public cameraData curCameraResults;
+  //public cameraData curCameraResults;
   Timer timer;
   //Timer timer = new Timer();
   AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
