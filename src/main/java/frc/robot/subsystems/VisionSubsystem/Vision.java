@@ -29,7 +29,7 @@ public class Vision {
   //
     List<List<PhotonPipelineResult>> curCameraResults;
     //
-    public record cameraData<T>(Integer AprilTagID, Double targetYaw, Boolean targetVisible, double targetRange) {}
+    public record cameraData<T>(Integer AprilTagID, Integer cameraNumber, Double targetYaw, Boolean targetVisible, double targetRange) {}
     //
     public int curAprilTagID = 0;
     public double targetYaw = 0.0;
@@ -66,9 +66,11 @@ public class Vision {
         kPVision_Turn = 0.0;
         double targetRange = 0.0;
         boolean targetVisible = false;
+        int cameraNumber = -1;
         //
         for (int i = 0; i < results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
             // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
+            cameraNumber = i;
             if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
                 // Get the last one in the list.
                 var result = results.get(i).get(results.get(i).size() - 1);
@@ -100,6 +102,6 @@ public class Vision {
             }
         }
         //
-        return new cameraData(curAprilTagID,targetYaw,targetVisible,targetRange);
+        return new cameraData(curAprilTagID,cameraNumber,targetYaw,targetVisible,targetRange);
     }
 }
