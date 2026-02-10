@@ -57,11 +57,10 @@ import com.studica.frc.Navx;
 import org.photonvision.PhotonUtils;
 
 public class Robot extends TimedRobot {
-  // private final XboxController m_controller = new XboxController(0);
-  RobotContainer robotContainer = new RobotContainer();
-  Drivetrain drivetrain = robotContainer.getDrivetrain();
-  PS5Controller m_controller = robotContainer.getDriverController();
-  Navx navX =  robotContainer.getGyro();
+  RobotContainer robotContainer;
+  PS5Controller m_controller;
+  Drivetrain drivetrain;
+  Navx navX;
   Pose2d curPose;
   double curX;
   double curY;
@@ -72,7 +71,10 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   public Robot() {
     //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
     //
-  
+    robotContainer = new RobotContainer();
+    m_controller = robotContainer.getDriverController();
+    drivetrain = robotContainer.getDrivetrain();
+    navX = robotContainer.getGyro();
   }
   @Override
   public void robotPeriodic() {
@@ -143,9 +145,8 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   }
 
   private void driveWithJoystick(boolean fieldRelative) {
-        fieldRelative = true;
         //targetYaw = 0;
-            setSwerve(-m_controller.getLeftY(), -m_controller.getLeftX(), -m_controller.getRightX(), fieldRelative);
+        setSwerve(-m_controller.getLeftY(), -m_controller.getLeftX(), -m_controller.getRightX(), fieldRelative);
   }
   private void manualControl() {
    //drivetrain.manualDrive(m_controller.getLeftY(), m_controller.getRightX());

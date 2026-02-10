@@ -30,13 +30,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class PathUtil {
   //
-  private final PathCommands pathCommands = new PathCommands();
+  //private final PathCommands pathCommands = new PathCommands();
   //public record Data(Command Commands,List<Double> targetPose) {};
   private static final double DEADBAND = 0.1;
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   public PathUtil() {}
   
-  public Command getPathFromTagID(int aprilTagID, Drivetrain drivetrain, Boolean fieldRelative, Double m_period, Robot robot, double targetYaw) {
+  public Command getPathFromTagID(int aprilTagID, PathCommands pathCommands, Drivetrain drivetrain, Boolean fieldRelative, Double m_period, Robot robot, double targetYaw) {
     // commands for each tag: // use fieldRelative to determine if it should be fieldRelative or just offSet!!!!!!!!!
     if (aprilTagID == 0) {
       return pathCommands.BlankCommand();
