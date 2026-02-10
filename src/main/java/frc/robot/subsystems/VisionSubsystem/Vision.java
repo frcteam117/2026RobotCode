@@ -20,8 +20,8 @@ import frc.robot.commands.SubsystemCommands;
 public class Vision {
     //
     private Rotation2d zeroRotation = Rotation2d.kZero;
-    public final PhotonCamera camera0; // needs callibrated
-    public final PhotonCamera camera2;
+    //public final PhotonCamera camera0; // needs callibrated
+    //public final PhotonCamera camera2;
     //
     AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     public static List<Pose3d> AprilTagPoses;
@@ -41,8 +41,8 @@ public class Vision {
         AprilTagPoses = Arrays.asList();
         kPVision_Turn = -.03;
         targetYaw = (0.0);
-        camera0 = new PhotonCamera("PC_Camera0");
-        camera2 = new PhotonCamera("PC_Camera2");
+        //camera0 = new PhotonCamera("PC_Camera0");
+        //camera2 = new PhotonCamera("PC_Camera2");
         //Rotation2d originRot = new Rotation2d(0);
         //Pose2d origin = new Pose2d(0,0,originRot);
         //m_swerve.resetOdometry(origin);
@@ -57,7 +57,7 @@ public class Vision {
     
 
     //
-    public cameraData getCameraResults() {
+    public cameraData getCameraResults(PhotonCamera camera0, PhotonCamera camera2) {
         SmartDashboard.putNumber("visionCheck", 000);
         var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
         //subsystemCommands.GetStartPoseFromVisibleAprilTags(results);

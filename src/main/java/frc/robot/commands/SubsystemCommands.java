@@ -91,8 +91,8 @@ public class SubsystemCommands {
   //================
   //private final VisionSubsystem visionSubsystem = new VisionSubsystem();
   private Rotation2d zeroRotation = Rotation2d.kZero;
-  public final PhotonCamera camera0; // needs callibrated
-  public final PhotonCamera camera2;
+  //public final PhotonCamera camera0; // needs callibrated
+  //public final PhotonCamera camera2;
     //
   private final Navx navX = new Navx(0, 100);
   //===
@@ -105,8 +105,8 @@ public class SubsystemCommands {
                 alliancePresent = true;
             } else {
             }
-        camera0 = new PhotonCamera("PC_Camera0");
-        camera2 = new PhotonCamera("PC_Camera2");
+        ///camera0 = new PhotonCamera("PC_Camera0");
+        //camera2 = new PhotonCamera("PC_Camera2");
     }
     // if (alliance.get() ==  Alliance.[Red/Blue]) {
     //};
@@ -248,7 +248,7 @@ public class SubsystemCommands {
     //===
     */
     // ADJUST FOR CAMERA POSITION. CHECK WHICH CAMERA AND ADD OFFSET FOR CAMERA POSEs!!!!!
-    public Pose2d GetStartPoseFromVisibleAprilTags(){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
+    public Pose2d GetStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         // change to be for any point in game by making it dependent on the alliance side if
         // - at start and the odometry robot pose at any other point???
         var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());

@@ -89,9 +89,9 @@ public class Indexer extends SubsystemBase
       .withFeedforward(new ArmFeedforward(0, 0, 0, 0))
       .withControlMode(ControlMode.CLOSED_LOOP);
     //
-    private final SmartMotorController kickerMotorController = new SparkWrapper(hopperMotor,
+    private final SmartMotorController kickerMotorController = new SparkWrapper(kickerMotor,
         DCMotor.getNEO(1),
-        hopperMotorConfig);
+        kickerMotorConfig);
 
   private final MechanismPositionConfig robotToMechanism = new MechanismPositionConfig()
       .withMaxRobotHeight(Meters.of(1.5))

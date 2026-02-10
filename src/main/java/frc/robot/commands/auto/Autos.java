@@ -24,9 +24,9 @@ public final class Autos {
     static Optional<Alliance> alliance;
     static Boolean alliancePresent = false;
     //
-    private Autos(Drivetrain drivetrain, SubsystemCommands subsystemCommands) {
+    private Autos(Drivetrain drivetrain, SubsystemCommands subsystemCommands, PhotonCamera camera0, PhotonCamera camera2) {
     //throw new UnsupportedOperationException("don't use this dummy");
-        robotStartPose = subsystemCommands.GetStartPoseFromVisibleAprilTags();
+        robotStartPose = subsystemCommands.GetStartPoseFromVisibleAprilTags(camera0,camera2);
         drivetrain.resetOdometry(robotStartPose);
         //
         Optional<Alliance> alliance = DriverStation.getAlliance();
