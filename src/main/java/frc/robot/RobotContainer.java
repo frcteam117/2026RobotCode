@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Swerve.SwerveConstants;
@@ -124,9 +125,8 @@ public class RobotContainer {
     // Example for later:
     new JoystickButton(m_controller, PS5Controller.Button.kCircle.value) //getting path from current visible tag(s)
     //- in case of multiple, it'll use the last one in the results sequence
-         .whileTrue(pathUtil.getPathFromTagID(
-            vision.getCameraResults().AprilTagID(), drivetrain, true, robot.getPeriod(), robot, targetYaw));
-  }
+         .whileTrue(subsystemCommands.LogStartPoseFromVisibleAprilTags(camera0, camera2));
+  }// make it so you can pass whole vision subsystem and just get each camera?
 
   private void configureDefaultCommands() {
     // Default drive command: run every scheduler cycle in teleop

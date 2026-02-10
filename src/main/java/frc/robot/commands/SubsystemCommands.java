@@ -333,6 +333,91 @@ public class SubsystemCommands {
             return null;
         }
     }
+    public Command LogStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
+        // change to be for any point in game by making it dependent on the alliance side if
+        // - at start and the odometry robot pose at any other point???
+        return Commands.runOnce(() -> {var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
+        SmartDashboard.putNumber("visionCheck", 111);
+        Pose2d robotPose = null;
+        int curAprilTagID;
+        double targetYaw;
+        double targetRange;
+        double robotX = 0;
+        double robotY = 0;
+        Rotation2d robotHeading = new Rotation2d();
+        for (int i = 0; i < results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
+            // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
+            if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
+                // Get the last one in the list.
+                SmartDashboard.putNumber("visionCheck", 222);
+                var result = results.get(i).get(results.get(i).size() - 1);
+                SmartDashboard.putNumber("visionCheck", 222.5);
+            // SmartDashboard.putNumber("Target tag ID", (result.getTargets().get(result.getTargets().size)-1));
+                SmartDashboard.putBoolean("result.hasTargets()", result.hasTargets());
+                SmartDashboard.putString("camera result", result.toString());
+                if (result.hasTargets()) { // PROBLEM HERE PROBLEM HERE PROBLEM HERE
+                    SmartDashboard.putNumber("visionCheck", 333);
+
+                    // At least one AprilTag was seen by the camera - should be getting thru to here on/off but still yes
+                    for (var target : result.getTargets()) {
+                        SmartDashboard.putString("camera result target(s)", target.toString());
+                        SmartDashboard.putNumber("visionCheck", 444);
+                        //if (aprilTagIDs.contains(target.getFiducialId())) { 
+                            // found one of the tags in aprilTagIDs
+                            curAprilTagID = target.getFiducialId();
+                            targetYaw = target.getYaw();
+                            SmartDashboard.putNumber("Target tag ID", curAprilTagID);
+                            SmartDashboard.putNumber("tag vis on camera #",i);
+                            System.out.println(target.getYaw());
+                            targetRange =
+                                        PhotonUtils.calculateDistanceToTargetMeters( // THESE NEED TO BE TUNED???
+                                                0.5   , // Measured with a tape measure, or in CAD.
+                                                RobotContainer.AprilTagPoses.get(curAprilTagID).getZ(),
+                                                Units.degreesToRadians(-30.0), // Measured with a protractor, or in CAD.
+                                                Units.degreesToRadians(target.getPitch()));
+                            //
+                            
+                            if (alliancePresent) {
+                                SmartDashboard.putBoolean("alliance present", true);
+                                if (alliance.get() == Alliance.Red) { // if on red side, add x,y,rot
+                                    robotX = (drivetrainSubsystem.getPose().getX() + (targetRange*Math.sin(targetYaw)));
+                                    robotY = (drivetrainSubsystem.getPose().getX() + (targetRange*Math.cos(targetYaw)));
+                                    robotHeading = Rotation2d.fromDegrees(0 - targetYaw);
+                                }
+                                else if (alliance.get() == Alliance.Blue) { // if on blue side, subtract x,y,rot
+                                    robotX = (drivetrainSubsystem.getPose().getX() - (targetRange*Math.sin(targetYaw)));
+                                    robotY = (drivetrainSubsystem.getPose().getX() - (targetRange*Math.cos(targetYaw)));
+                                    robotHeading = Rotation2d.fromDegrees(180 - targetYaw);
+                                }
+                            }
+                            else {
+                                SmartDashboard.putBoolean("alliance present", false);
+                            }
+
+
+                            robotPose = new Pose2d(robotX, robotY, robotHeading);
+                        }
+                    }
+                    else {
+                        SmartDashboard.putNumber("visionCheck", 555); // this is what is showing when it quits
+                    }
+                //}
+            }
+            else {
+            }
+            
+        }
+
+        //
+        if (robotPose != null) {
+            SmartDashboard.putNumber("robot pose from tag X", robotX);
+            SmartDashboard.putNumber("robot pose from tag Y", robotY);
+            //return robotPose;
+        }
+        else {
+            //return null;
+        }});
+    }
     //
 
 }
