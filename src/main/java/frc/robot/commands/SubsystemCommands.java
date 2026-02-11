@@ -264,7 +264,7 @@ public class SubsystemCommands {
     public Pose2d GetStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2, Drivetrain drivetrain){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         // change to be for any point in game by making it dependent on the alliance side if
         // - at start and the odometry robot pose at any other point???
-        var results = Arrays.asList(camera2.getAllUnreadResults(),camera0.getAllUnreadResults());
+        var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
         SmartDashboard.putNumber("visionCheck", 111);
         Pose2d robotPose = null;
         int curAprilTagID;
@@ -273,7 +273,7 @@ public class SubsystemCommands {
         double robotX = 0;
         double robotY = 0;
         Rotation2d robotHeading = new Rotation2d();
-        for (int i = 0; i < results.size()-1; i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
+        for (int i = 0; i <= results.size()-1; i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
             // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
             if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
                 // Get the last one in the list.
@@ -352,7 +352,7 @@ public class SubsystemCommands {
         //System.out.println(17171717);
         return Commands.runOnce(() -> {
             
-        var results = Arrays.asList(camera2.getAllUnreadResults(),camera0.getAllUnreadResults());
+        var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
         // change to not use camera0 while its not on robot?
         Pose2d robotPose = null;
         int curAprilTagID;
@@ -361,7 +361,7 @@ public class SubsystemCommands {
         double robotX = 0;
         double robotY = 0;
         Rotation2d robotHeading = new Rotation2d();
-        for (int i = 0; i < results.size()-1; i++) { 
+        for (int i = 0; i <= results.size()-1; i++) { 
             
             // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
             // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
