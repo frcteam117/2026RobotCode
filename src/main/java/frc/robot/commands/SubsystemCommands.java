@@ -126,7 +126,27 @@ public class SubsystemCommands {
                 drivetrain.drive(0.0, 0.0, 0.0, fieldRelative, m_period); // add way to stop the robot?????
         });
 
-    }/*
+    }
+    //
+    public Command resetNavxYaw(Navx navx) {
+        return Commands.runOnce( () -> {
+            navx.resetYaw();
+            System.out.println("reset Navx yaw");
+        });
+    }
+    public Command setDrivetrainX(Drivetrain drivetrain) {
+        return Commands.runOnce( () -> {
+            drivetrain.setX();
+            System.out.println("set drivetrain X");
+        });
+    }
+    
+    
+    
+    
+    
+    
+    /*
     //=================================== // unclear is these will center here or stem from their individual subsystems?
     // non-drivetrain subsystem commands:
     public static Command ExpandHopper() {
@@ -253,7 +273,7 @@ public class SubsystemCommands {
         double robotX = 0;
         double robotY = 0;
         Rotation2d robotHeading = new Rotation2d();
-        for (int i = 0; i < results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
+        for (int i = 0; i < results.size()-1; i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
             // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
             if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
                 // Get the last one in the list.
@@ -329,8 +349,11 @@ public class SubsystemCommands {
     public Command LogStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2, Drivetrain drivetrain){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         // change to be for any point in game by making it dependent on the alliance side if
         // - at start and the odometry robot pose at any other point???
-        return Commands.runOnce(() -> {var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
-        SmartDashboard.putNumber("visionCheck", 111);
+        //System.out.println(17171717);
+        return Commands.runOnce(() -> {
+            
+        var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
+        // change to not use camera0 while its not on robot?
         Pose2d robotPose = null;
         int curAprilTagID;
         double targetYaw;
@@ -338,7 +361,9 @@ public class SubsystemCommands {
         double robotX = 0;
         double robotY = 0;
         Rotation2d robotHeading = new Rotation2d();
-        for (int i = 0; i < results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
+        for (int i = 0; i < results.size()-1; i++) { 
+            
+            // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
             // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
             if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
                 // Get the last one in the list.
@@ -392,7 +417,6 @@ public class SubsystemCommands {
                         }
                     }
                     else {
-                        SmartDashboard.putNumber("visionCheck", 555); // this is what is showing when it quits
                     }
                 //}
             }

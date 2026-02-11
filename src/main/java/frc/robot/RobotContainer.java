@@ -52,8 +52,8 @@ public class RobotContainer {
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
     // 
   private Rotation2d zeroRotation = Rotation2d.kZero;
-  public final PhotonCamera camera0;// = new PhotonCamera("PC_Camera0"); // needs callibrated
-  public final PhotonCamera camera2;// = new PhotonCamera("PC_Camera2");
+  public final PhotonCamera camera0 = new PhotonCamera("PC_Camera0"); // needs callibrated
+  public final PhotonCamera camera2 = new PhotonCamera("PC_Camera2");
 
   //public record cameraData = visionSubsystem.cameraData; // FIXXXXX
 
@@ -101,8 +101,8 @@ public class RobotContainer {
     configureDefaultCommands();
     //
     navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
-    camera0 = new PhotonCamera("PC_Camera0"); // needs callibrated
-    camera2 = new PhotonCamera("PC_Camera2");
+    //camera0 = new PhotonCamera("PC_Camera0"); // needs callibrated
+    //camera2 = new PhotonCamera("PC_Camera2");
     //
     pathRunning = false;
     SmartDashboard.putBoolean("running Path1Command",true);
@@ -121,12 +121,27 @@ public class RobotContainer {
     }
   }
 
-  private void configureBindings() { //TODO: CONFIGURE BUTTON BINDINGS!!!, fix subsystem organization
+  private void configureBindings() { //
     // Example for later:
-    new JoystickButton(m_controller, PS5Controller.Button.kCircle.value) //getting path from current visible tag(s)
+    SmartDashboard.putBoolean("configureBindings()", true);
+    System.out.println("configureBindings()");
+    new JoystickButton(m_controller, PS5Controller.Button.kCircle.value) //
     //- in case of multiple, it'll use the last one in the results sequence
          .whileTrue(subsystemCommands.LogStartPoseFromVisibleAprilTags(camera0, camera2, drivetrain));
-  }// make it so you can pass whole vision subsystem and just get each camera?
+    // FIGURE OUT HOW TO MAP THESE TO NON COMMANDS ASAP!!!!!!
+    new JoystickButton(m_controller, PS5Controller.Button.kSquare.value)
+        .whileTrue(subsystemCommands.resetNavxYaw(navX));
+
+    new JoystickButton(m_controller, PS5Controller.Button.kCross.value)
+        .whileTrue(subsystemCommands.setDrivetrainX(drivetrain));
+    //if (m_controller.getSquareButtonPressed()) {
+        //navX.resetYaw();
+    //}
+
+    //if (m_controller.getCrossButton()) {
+        //drivetrain.setX();
+    //} else {
+  }// make it so you can pass whole vision subsystem and just get each camera? like make the cameras initialized in vision?
 
   private void configureDefaultCommands() {
     // Default drive command: run every scheduler cycle in teleop

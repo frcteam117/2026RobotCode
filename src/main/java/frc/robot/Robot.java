@@ -71,6 +71,7 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   public Robot() {
     //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
     //
+    RobotContainer robotContainer = new RobotContainer();
     m_controller = RobotContainer.getDriverController();
     drivetrain = RobotContainer.getDrivetrain();
     navX = RobotContainer.getGyro();
@@ -96,12 +97,12 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
     curY = curPose.getY();
     //curRot = curPose.getRotation();
 
-    if (m_controller.getSquareButtonPressed()) {
+    //if (m_controller.getSquareButtonPressed()) {
         navX.resetYaw();
-    }
+    //}
 
     if (m_controller.getCrossButton()) {
-        drivetrain.setX();
+        //drivetrain.setX();
     } else {
     driveWithJoystick(true);
     }
