@@ -26,7 +26,7 @@ public final class Autos {
     //
     private Autos(Drivetrain drivetrain, SubsystemCommands subsystemCommands, PhotonCamera camera0, PhotonCamera camera2) {
     //throw new UnsupportedOperationException("don't use this dummy");
-        robotStartPose = subsystemCommands.GetStartPoseFromVisibleAprilTags(camera0,camera2);
+        robotStartPose = subsystemCommands.GetStartPoseFromVisibleAprilTags(camera0,camera2, drivetrain);
         drivetrain.resetOdometry(robotStartPose);
         //
         Optional<Alliance> alliance = DriverStation.getAlliance();

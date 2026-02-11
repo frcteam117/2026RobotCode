@@ -71,10 +71,9 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   public Robot() {
     //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
     //
-    robotContainer = new RobotContainer();
-    m_controller = robotContainer.getDriverController();
-    drivetrain = robotContainer.getDrivetrain();
-    navX = robotContainer.getGyro();
+    m_controller = RobotContainer.getDriverController();
+    drivetrain = RobotContainer.getDrivetrain();
+    navX = RobotContainer.getGyro();
   }
   @Override
   public void robotPeriodic() {

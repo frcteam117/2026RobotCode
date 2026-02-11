@@ -32,28 +32,29 @@ import frc.robot.subsystems.ShooterSubsystem.*;
 import frc.robot.subsystems.VisionSubsystem.*;
 import frc.robot.util.PathUtil;
 public class RobotContainer {
-  private final Navx navX = new Navx(0, 100); // rate in Hz
-  private final Drivetrain drivetrain = new Drivetrain(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
+  private static final Navx navX = new Navx(0, 100); // rate in Hz
+  private static final Drivetrain drivetrain = new Drivetrain(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   //private final Indexer indexer = new Indexer();
   //private final Intake intake = new Intake();
   //private final Shooter shooter = new Shooter(); // make one for hood separate from shooter?
-  private final Vision vision = new Vision();
+  private static final Vision vision = new Vision();
 //  
-  private final PS5Controller m_controller = new PS5Controller(0);
+  private static final PS5Controller m_controller = new PS5Controller(0);
   //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
   //inputs.yawPosition = navX.getRotation2d().unaryMinus();
   //
-  private final Robot robot = new Robot();
-  private final PathUtil pathUtil = new PathUtil();
-  private final SubsystemCommands subsystemCommands = new SubsystemCommands();
+  //private final Robot robot = new Robot();
+  private static final PathUtil pathUtil = new PathUtil();
+  private static final SubsystemCommands subsystemCommands = new SubsystemCommands();
 
   //private final DrivetrainSubsystem m_swerve = SubsystemCommands.drivetrainSubsystem;//new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
-  private final SwerveModuleSimulation swerveModuleSim = new SwerveModuleSimulation();
+  private static final SwerveModuleSimulation swerveModuleSim = new SwerveModuleSimulation();
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
     // 
   private Rotation2d zeroRotation = Rotation2d.kZero;
-  public final PhotonCamera camera0; // needs callibrated
-  public final PhotonCamera camera2;
+  public final PhotonCamera camera0;// = new PhotonCamera("PC_Camera0"); // needs callibrated
+  public final PhotonCamera camera2;// = new PhotonCamera("PC_Camera2");
+
   //public record cameraData = visionSubsystem.cameraData; // FIXXXXX
 
   //public cameraData curCameraResults;
@@ -79,13 +80,13 @@ public class RobotContainer {
 
   public static boolean pathRunning = false;
   // Gyro supplier created via factory and constants
-  private final GyroSupplier m_gyro =
-      GyroFactory.createGyro(
-          SwerveConstants.GyroConstants.GYRO_TYPE,
-          SwerveConstants.GyroConstants.GYRO_PARAMS);
+  //private final GyroSupplier m_gyro =
+    //  GyroFactory.createGyro(
+      //    SwerveConstants.GyroConstants.GYRO_TYPE,
+        //  SwerveConstants.GyroConstants.GYRO_PARAMS);
 
   // Swerve drivetrain subsystem
-  private final PathCommands pathCommands = new PathCommands();
+  private static final PathCommands pathCommands = new PathCommands();
   //private final SubsystemCommands subsystemCommands = new SubsystemCommands();
 
   // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
@@ -100,15 +101,14 @@ public class RobotContainer {
     configureDefaultCommands();
     //
     navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
-
+    camera0 = new PhotonCamera("PC_Camera0"); // needs callibrated
+    camera2 = new PhotonCamera("PC_Camera2");
     //
     pathRunning = false;
     SmartDashboard.putBoolean("running Path1Command",true);
     AprilTagPoses = Arrays.asList();
     kPVision_Turn = -.03;
     targetYaw = (0.0);
-    camera0 = new PhotonCamera("PC_Camera0");
-    camera2 = new PhotonCamera("PC_Camera2");
     Rotation2d originRot = new Rotation2d(0);
     Pose2d origin = new Pose2d(0,0,originRot);
     drivetrain.resetOdometry(origin);
@@ -125,7 +125,7 @@ public class RobotContainer {
     // Example for later:
     new JoystickButton(m_controller, PS5Controller.Button.kCircle.value) //getting path from current visible tag(s)
     //- in case of multiple, it'll use the last one in the results sequence
-         .whileTrue(subsystemCommands.LogStartPoseFromVisibleAprilTags(camera0, camera2));
+         .whileTrue(subsystemCommands.LogStartPoseFromVisibleAprilTags(camera0, camera2, drivetrain));
   }// make it so you can pass whole vision subsystem and just get each camera?
 
   private void configureDefaultCommands() {
@@ -165,20 +165,20 @@ public class RobotContainer {
   }
 
   /** Replace this with your real autonomous routine later. */
-  public Command getAutonomousCommand() {
+  public static Command getAutonomousCommand() {
     // e.g. return Autos.exampleAuto(m_swerve);
     return null;
   }
 
   // Optional: expose drivetrain / controller if you need them elsewhere
-  public Drivetrain getDrivetrain() {
+  public static Drivetrain getDrivetrain() {
     return drivetrain;
   }
 
-  public PS5Controller getDriverController() {
+  public static PS5Controller getDriverController() {
     return m_controller;
   }
-  public Navx getGyro() {
+  public static Navx getGyro() {
     return navX;
   }
 }

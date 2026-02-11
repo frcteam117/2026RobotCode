@@ -94,7 +94,6 @@ public class SubsystemCommands {
   //public final PhotonCamera camera0; // needs callibrated
   //public final PhotonCamera camera2;
     //
-  private final Navx navX = new Navx(0, 100);
   //===
   static Optional<Alliance> alliance;
     static Boolean alliancePresent = false;
@@ -111,12 +110,6 @@ public class SubsystemCommands {
     // if (alliance.get() ==  Alliance.[Red/Blue]) {
     //};
   //
-    public final Drivetrain drivetrainSubsystem = new Drivetrain(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private static final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
-    public static final Intake intakeSubsystem = new Intake();
-    public static final Shooter shooterSubsystem = new Shooter();
-    
-     //public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-    public static final Indexer hopperSubsystem = new Indexer();
     //=====
     
     
@@ -248,7 +241,7 @@ public class SubsystemCommands {
     //===
     */
     // ADJUST FOR CAMERA POSITION. CHECK WHICH CAMERA AND ADD OFFSET FOR CAMERA POSEs!!!!!
-    public Pose2d GetStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
+    public Pose2d GetStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2, Drivetrain drivetrain){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         // change to be for any point in game by making it dependent on the alliance side if
         // - at start and the odometry robot pose at any other point???
         var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
@@ -295,13 +288,13 @@ public class SubsystemCommands {
                             if (alliancePresent) {
                                 SmartDashboard.putBoolean("alliance present", true);
                                 if (alliance.get() == Alliance.Red) { // if on red side, add x,y,rot
-                                    robotX = (drivetrainSubsystem.getPose().getX() + (targetRange*Math.sin(targetYaw)));
-                                    robotY = (drivetrainSubsystem.getPose().getX() + (targetRange*Math.cos(targetYaw)));
+                                    robotX = (drivetrain.getPose().getX() + (targetRange*Math.sin(targetYaw)));
+                                    robotY = (drivetrain.getPose().getX() + (targetRange*Math.cos(targetYaw)));
                                     robotHeading = Rotation2d.fromDegrees(0 - targetYaw);
                                 }
                                 else if (alliance.get() == Alliance.Blue) { // if on blue side, subtract x,y,rot
-                                    robotX = (drivetrainSubsystem.getPose().getX() - (targetRange*Math.sin(targetYaw)));
-                                    robotY = (drivetrainSubsystem.getPose().getX() - (targetRange*Math.cos(targetYaw)));
+                                    robotX = (drivetrain.getPose().getX() - (targetRange*Math.sin(targetYaw)));
+                                    robotY = (drivetrain.getPose().getX() - (targetRange*Math.cos(targetYaw)));
                                     robotHeading = Rotation2d.fromDegrees(180 - targetYaw);
                                 }
                             }
@@ -333,7 +326,7 @@ public class SubsystemCommands {
             return null;
         }
     }
-    public Command LogStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
+    public Command LogStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2, Drivetrain drivetrain){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         // change to be for any point in game by making it dependent on the alliance side if
         // - at start and the odometry robot pose at any other point???
         return Commands.runOnce(() -> {var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
@@ -380,13 +373,13 @@ public class SubsystemCommands {
                             if (alliancePresent) {
                                 SmartDashboard.putBoolean("alliance present", true);
                                 if (alliance.get() == Alliance.Red) { // if on red side, add x,y,rot
-                                    robotX = (drivetrainSubsystem.getPose().getX() + (targetRange*Math.sin(targetYaw)));
-                                    robotY = (drivetrainSubsystem.getPose().getX() + (targetRange*Math.cos(targetYaw)));
+                                    robotX = (drivetrain.getPose().getX() + (targetRange*Math.sin(targetYaw)));
+                                    robotY = (drivetrain.getPose().getX() + (targetRange*Math.cos(targetYaw)));
                                     robotHeading = Rotation2d.fromDegrees(0 - targetYaw);
                                 }
                                 else if (alliance.get() == Alliance.Blue) { // if on blue side, subtract x,y,rot
-                                    robotX = (drivetrainSubsystem.getPose().getX() - (targetRange*Math.sin(targetYaw)));
-                                    robotY = (drivetrainSubsystem.getPose().getX() - (targetRange*Math.cos(targetYaw)));
+                                    robotX = (drivetrain.getPose().getX() - (targetRange*Math.sin(targetYaw)));
+                                    robotY = (drivetrain.getPose().getX() - (targetRange*Math.cos(targetYaw)));
                                     robotHeading = Rotation2d.fromDegrees(180 - targetYaw);
                                 }
                             }
