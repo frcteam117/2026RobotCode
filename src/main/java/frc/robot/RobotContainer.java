@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,10 +62,9 @@ public class RobotContainer {
   Timer timer;
   //Timer timer = new Timer();
   AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-  public static List<Pose3d> AprilTagPoses;
-
+  public static List<Pose3d> AprilTagPoses = new ArrayList<>();
   //
-  List<Integer> aprilTagIDs = Arrays.asList(1, 2, 3); // do we need this?????? maybe get rid of it <---------------------
+  //List<Integer> aprilTagIDs = Arrays.asList(1, 2, 3); // do we need this?????? maybe get rid of it <---------------------
   public static int curAprilTagID = 0;
   public static boolean targetVisible = false;
   public static double targetYaw = 0;
@@ -106,7 +106,6 @@ public class RobotContainer {
     //
     pathRunning = false;
     SmartDashboard.putBoolean("running Path1Command",true);
-    AprilTagPoses = Arrays.asList();
     kPVision_Turn = -.03;
     targetYaw = (0.0);
     Rotation2d originRot = new Rotation2d(0);
@@ -117,7 +116,9 @@ public class RobotContainer {
     for (int i = 1; i < 33; i++) { // 33 because 32 tags, index 0 will return a safe Null
         Pose3d tagPose = kTagLayout.getTagPose(i).orElse(new Pose3d()); 
         SmartDashboard.putNumber("tagPose X",tagPose.getX());
-        //AprilTagPoses.add(tagPose);
+        SmartDashboard.putString("tagpose", tagPose.toString());
+        SmartDashboard.putNumber("tagpose adding i", i);
+        AprilTagPoses.add(tagPose);
     }
   }
 
