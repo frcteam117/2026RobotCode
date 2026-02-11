@@ -61,6 +61,8 @@ public class Robot extends TimedRobot {
   PS5Controller m_controller;
   Drivetrain drivetrain;
   Navx navX;
+  PhotonCamera camera0;
+  PhotonCamera camera2;
   Pose2d curPose;
   double curX;
   double curY;
@@ -75,6 +77,7 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
     m_controller = RobotContainer.getDriverController();
     drivetrain = RobotContainer.getDrivetrain();
     navX = RobotContainer.getGyro();
+    camera2 = robotContainer.getCamera2();
   }
   @Override
   public void robotPeriodic() {
@@ -92,6 +95,7 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
 
   @Override
   public void teleopPeriodic() {
+    SmartDashboard.putString("camera2 results", camera2.getAllUnreadResults().toString());
     curPose = drivetrain.getPose();
     curX = curPose.getX();
     curY = curPose.getY();

@@ -264,7 +264,7 @@ public class SubsystemCommands {
     public Pose2d GetStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2, Drivetrain drivetrain){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         // change to be for any point in game by making it dependent on the alliance side if
         // - at start and the odometry robot pose at any other point???
-        var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
+        var results = Arrays.asList(camera2.getAllUnreadResults(),camera0.getAllUnreadResults());
         SmartDashboard.putNumber("visionCheck", 111);
         Pose2d robotPose = null;
         int curAprilTagID;
@@ -352,7 +352,7 @@ public class SubsystemCommands {
         //System.out.println(17171717);
         return Commands.runOnce(() -> {
             
-        var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
+        var results = Arrays.asList(camera2.getAllUnreadResults(),camera0.getAllUnreadResults());
         // change to not use camera0 while its not on robot?
         Pose2d robotPose = null;
         int curAprilTagID;
@@ -368,11 +368,14 @@ public class SubsystemCommands {
             if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
                 // Get the last one in the list.
                 SmartDashboard.putNumber("visionCheck", 222);
-                var result = results.get(i).get(results.get(i).size() - 1);
-                SmartDashboard.putNumber("visionCheck", 222.5);
+                var result = results.get(i).get(results.get(i).size() - 1); // get latest result
+                SmartDashboard.putNumber("visionCheck", 222.555);
             // SmartDashboard.putNumber("Target tag ID", (result.getTargets().get(result.getTargets().size)-1));
                 SmartDashboard.putBoolean("result.hasTargets()", result.hasTargets());
                 SmartDashboard.putString("camera result", result.toString());
+
+                // TO DEBUG: camera IS getting results for the tag, but this isnt working for some
+                // reason :(
                 if (result.hasTargets()) { // PROBLEM HERE PROBLEM HERE PROBLEM HERE
                     SmartDashboard.putNumber("visionCheck", 333);
 

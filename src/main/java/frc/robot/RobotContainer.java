@@ -196,4 +196,7 @@ public class RobotContainer {
   public static Navx getGyro() {
     return navX;
   }
+  public PhotonCamera getCamera2() {
+    return camera2;
+  }
 }
