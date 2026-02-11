@@ -95,6 +95,7 @@ public class SubsystemCommands {
   //public final PhotonCamera camera2;
     //
   //===
+  String allianceColor = "blue";
   static Optional<Alliance> alliance;
     static Boolean alliancePresent = false;
 
@@ -140,7 +141,12 @@ public class SubsystemCommands {
             System.out.println("set drivetrain X");
         });
     }
-    
+    public Command AlignToTag(Drivetrain drivetrain, Vision vision, PhotonCamera camera2, PathCommands pathCommands, Double m_period, Boolean fieldRelative) {
+        return Commands.runOnce( () -> {
+            pathCommands.AlignToTag(drivetrain, vision, camera2, m_period, fieldRelative);
+            System.out.println("aligning to tag");
+        });
+    }
     
     
     
@@ -273,7 +279,7 @@ public class SubsystemCommands {
         double robotX = 0;
         double robotY = 0;
         Rotation2d robotHeading = new Rotation2d();
-        for (int i = 0; i <= results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
+        for (int i = 0; i < results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
             // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
             if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
                 // Get the last one in the list.
@@ -361,8 +367,9 @@ public class SubsystemCommands {
         double robotX = 0;
         double robotY = 0;
         Rotation2d robotHeading = new Rotation2d();
-        for (int i = 0; i <= results.size(); i++) { 
-            
+        for (int i = 0; i < results.size(); i++) { 
+            SmartDashboard.putNumber("visionCheck", 0.555);
+
             // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
             // - it so all cameras combine results or if this system works - THIS IS THE PROBLEM THIS NEVER RETURNS TARGET AND VISIBLE <---------
             if (!results.get(i).isEmpty()) {// Camera processed a new frame since last
@@ -398,14 +405,14 @@ public class SubsystemCommands {
                                                 Units.degreesToRadians(target.getPitch()));
                             //
                             
-                            if (alliancePresent) {
+                            if (true) {
                                 SmartDashboard.putBoolean("alliance present", true);
-                                if (alliance.get() == Alliance.Red) { // if on red side, add x,y,rot
+                                if (allianceColor == "red") { // if on red side, add x,y,rot
                                     robotX = (drivetrain.getPose().getX() + (targetRange*Math.sin(targetYaw)));
                                     robotY = (drivetrain.getPose().getX() + (targetRange*Math.cos(targetYaw)));
                                     robotHeading = Rotation2d.fromDegrees(0 - targetYaw);
                                 }
-                                else if (alliance.get() == Alliance.Blue) { // if on blue side, subtract x,y,rot
+                                else if (allianceColor == "blue") { // if on blue side, subtract x,y,rot
                                     robotX = (drivetrain.getPose().getX() - (targetRange*Math.sin(targetYaw)));
                                     robotY = (drivetrain.getPose().getX() - (targetRange*Math.cos(targetYaw)));
                                     robotHeading = Rotation2d.fromDegrees(180 - targetYaw);

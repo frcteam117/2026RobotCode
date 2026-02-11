@@ -70,7 +70,8 @@ public class RobotContainer {
   public static double targetYaw = 0;
   public static double targetRange; // from photonvision docs
   public static double kPVision_Turn;
-  
+  public static boolean fieldRelative;
+  public static double m_period;
   Pose2d curPose;
   double curX;
   double curY;
@@ -96,7 +97,7 @@ public class RobotContainer {
   private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(1);
   private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(9);
 
-  public RobotContainer() {
+  public RobotContainer(Double period) {
     configureBindings();
     configureDefaultCommands();
     //
@@ -111,6 +112,7 @@ public class RobotContainer {
     Rotation2d originRot = new Rotation2d(0);
     Pose2d origin = new Pose2d(0,0,originRot);
     drivetrain.resetOdometry(origin);
+    m_period = period;
     //
     
     for (int i = 1; i < 33; i++) { // 33 because 32 tags, index 0 will return a safe Null
@@ -130,6 +132,8 @@ public class RobotContainer {
     //- in case of multiple, it'll use the last one in the results sequence
          .whileTrue(subsystemCommands.LogStartPoseFromVisibleAprilTags(camera0, camera2, drivetrain));
     // FIGURE OUT HOW TO MAP THESE TO NON COMMANDS ASAP!!!!!!
+    new JoystickButton(m_controller, PS5Controller.Button.kTriangle.value)
+          .whileTrue(subsystemCommands.AlignToTag(drivetrain, vision, camera2, pathCommands, m_period,fieldRelative));
     new JoystickButton(m_controller, PS5Controller.Button.kSquare.value)
         .whileTrue(subsystemCommands.resetNavxYaw(navX));
 

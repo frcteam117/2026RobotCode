@@ -73,7 +73,7 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   public Robot() {
     //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
     //
-    RobotContainer robotContainer = new RobotContainer();
+    RobotContainer robotContainer = new RobotContainer(getPeriod());
     m_controller = RobotContainer.getDriverController();
     drivetrain = RobotContainer.getDrivetrain();
     navX = RobotContainer.getGyro();
@@ -154,5 +154,9 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   }
   private void manualControl() {
    //drivetrain.manualDrive(m_controller.getLeftY(), m_controller.getRightX());
+  }
+
+  public double getRobotPeriod() {
+    return getPeriod();
   }
 }

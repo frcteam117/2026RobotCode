@@ -40,6 +40,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Swerve.SwerveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
 import frc.robot.subsystems.ShooterSubsystem.Shooter;
+import frc.robot.subsystems.VisionSubsystem.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 //
@@ -55,6 +56,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import org.photonvision.PhotonCamera;
 
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
 
@@ -86,17 +89,23 @@ public class PathCommands {
     //
     static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     //
-    public void AlignToTag(Drivetrain drivetrain, Double m_period, Boolean fieldRelative) {
+    public void AlignToTag(Drivetrain drivetrain, Vision vision, PhotonCamera camera2, Double m_period, Boolean fieldRelative) {
         //    change 2??? vvv
-            if (RobotContainer.targetRange > 2 && RobotContainer.targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
+        var cameraData = vision.getCameraResults(camera2);
+            double targetRange = cameraData.targetRange();
+            boolean targetVisible = cameraData.targetVisible();
+            double targetYaw = cameraData.targetYaw();
+            double kPVision_Turn = cameraData.kPVision_Turn();
+            SmartDashboard.putString("cameraData",cameraData.toString());
+            if (targetRange > 2 && targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
                 SmartDashboard.putNumber("check #",2);
                 SmartDashboard.putBoolean("aligning to tag",true);
                 double xSpeed =
-                    -m_xspeedLimiter.calculate(MathUtil.applyDeadband(RobotContainer.targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
+                    -m_xspeedLimiter.calculate(MathUtil.applyDeadband(targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
                     * SwerveConstants.TOP_SPEED_METERS_PER_SEC
                     * 0.4;
                 double ySpeed =
-                    -m_yspeedLimiter.calculate(MathUtil.applyDeadband(RobotContainer.targetYaw * RobotContainer.kPVision_Turn, 0.03))
+                    -m_yspeedLimiter.calculate(MathUtil.applyDeadband(targetYaw * kPVision_Turn, 0.03))
                     * SwerveConstants.TOP_SPEED_METERS_PER_SEC
                     * 0.4;
                     //SmartDashboard.putBoolean("setSwerve",true);
