@@ -109,7 +109,7 @@ public class SwerveModule {
      * Configure the azimuth motor based on encoder type
      */
     private void configureAzimuthMotor() {
-        double P = 0.07;
+        double P = 0.01; // tune PID here???
         double I = 0.0;
         double D = 0.0;
         double F = 0.0;
