@@ -60,12 +60,7 @@ public class Vision {
     public cameraData getCameraResults(PhotonCamera camera2) {// camera0, PhotonCamera camera2) {
         SmartDashboard.putNumber("visionCheck", 000);
         var results = Arrays.asList(camera2.getAllUnreadResults());//camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
-        //subsystemCommands.GetStartPoseFromVisibleAprilTags(results);
-        curAprilTagID = 0;
-        targetYaw = 0.0;
-        //kPVision_Turn = 0.0;
-        double targetRange = 0.0;
-        boolean targetVisible = false;
+        
         int cameraNumber = -1;
         //
         for (int i = 0; i < results.size(); i++) { // looping through results of each camera, with this system camera2 has priority, see if you need to coordinate
