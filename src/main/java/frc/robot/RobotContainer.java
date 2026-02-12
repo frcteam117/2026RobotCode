@@ -57,7 +57,7 @@ public class RobotContainer {
   public final PhotonCamera camera2 = new PhotonCamera("PC_Camera2");
 
   //public record cameraData = visionSubsystem.cameraData; // FIXXXXX
-
+  
   //public cameraData curCameraResults;
   Timer timer;
   //Timer timer = new Timer();
@@ -203,5 +203,8 @@ public class RobotContainer {
   }
   public PhotonCamera getCamera2() {
     return camera2;
+  }
+  public PathCommands getPathCommands() {
+    return pathCommands;
   }
 }

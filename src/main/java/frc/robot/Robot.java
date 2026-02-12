@@ -61,12 +61,18 @@ public class Robot extends TimedRobot {
   PS5Controller m_controller;
   Drivetrain drivetrain;
   Navx navX;
+  PathCommands pathCommands;
   PhotonCamera camera0;
   PhotonCamera camera2;
   Pose2d curPose;
   double curX;
   double curY;
-private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
+
+  double drivetrain_xSpeed=0.0;
+  double drivetrain_ySpeed=0.0;
+  double drivetrain_rot=0.0;
+  Boolean drivetrain_fieldRelative=true;
+  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
   private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(1);
   private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(9);
 
@@ -78,6 +84,7 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
     drivetrain = RobotContainer.getDrivetrain();
     navX = RobotContainer.getGyro();
     camera2 = robotContainer.getCamera2();
+    pathCommands = robotContainer.getPathCommands();
   }
   @Override
   public void robotPeriodic() {
@@ -110,7 +117,14 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
     } else {
     driveWithJoystick(true);
     }
-    
+
+    drivetrain.drive(
+      drivetrain_xSpeed,
+      drivetrain_ySpeed,
+      drivetrain_rot,
+      drivetrain_fieldRelative,
+      getPeriod());
+
     //
     // if (m_controller.getCircleButton()) { // trigger pathCommands without cameras attached
     //     Command command = pathUtil.getPathFromTagID(1, drivetrain, true, getPeriod(), this, targetYaw); // is targetYaw right here?
@@ -145,7 +159,23 @@ private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
     double c =
         m_rotLimiter.calculate(MathUtil.applyDeadband(rot, 0.04))
             * 1.4;
-    drivetrain.drive(a, b, c, fieldRelative, getPeriod());
+    if (a != 0) {
+      System.out.println("joystick drive"+a+" "+b+" "+c+" "+fieldRelative+" "+getPeriod());
+    }
+
+    if (!m_controller.getTriangleButton()) {
+      drivetrain_xSpeed=a;
+      drivetrain_ySpeed=b;
+      drivetrain_rot=c;
+      drivetrain_fieldRelative=fieldRelative;
+    }
+    else {
+      drivetrain_xSpeed=pathCommands.getDrivetrainValues().xSpeed();
+    drivetrain_ySpeed=pathCommands.getDrivetrainValues().ySpeed();
+    drivetrain_rot=pathCommands.getDrivetrainValues().rot();
+    drivetrain_fieldRelative=pathCommands.getDrivetrainValues().fieldRelative();
+
+    }
   }
 
   private void driveWithJoystick(boolean fieldRelative) {

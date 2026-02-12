@@ -77,6 +77,11 @@ public class PathCommands {
   //
   //private final SubsystemCommands
   //
+  double drivetrain_xSpeed = 0.0;
+  double drivetrain_ySpeed =  0.0;
+  double drivetrain_rot = 0.0;
+  boolean drivetrain_fieldRelative = true;
+
   public static double limiter = 1; // adjust!!
   public static double speedCap = 0.5; // adjust!!
   private static final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(1);
@@ -84,6 +89,11 @@ public class PathCommands {
   private static final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(9); // import these from robot for better continuity?
   Timer timer;
   
+
+  public record drivetrainValues(double xSpeed, double ySpeed,double rot, boolean fieldRelative) {};
+
+
+
     //Drivetrain m_swerve; // does this just work????????
     //
     //
@@ -96,25 +106,23 @@ public class PathCommands {
             boolean targetVisible = cameraData.targetVisible();
             double targetYaw = cameraData.targetYaw();
             double kPVision_Turn = cameraData.kPVision_Turn();
-            SmartDashboard.putString("cameraData",cameraData.toString());
-            if (targetRange > 2 && targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
+            SmartDashboard.putString("cameraData",cameraData.toString()); // if targetRange > 2
+            if (true && targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
                 SmartDashboard.putNumber("check #",2);
-                SmartDashboard.putBoolean("aligning to tag",true);
+                
                 double xSpeed =
                     -m_xspeedLimiter.calculate(MathUtil.applyDeadband(targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
-                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC
-                    * 0.4;
+                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC;
                 double ySpeed =
                     -m_yspeedLimiter.calculate(MathUtil.applyDeadband(targetYaw * kPVision_Turn, 0.03))
-                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC
-                    * 0.4;
+                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC;
                     //SmartDashboard.putBoolean("setSwerve",true);
-                    setSwerve(drivetrain, m_period, xSpeed, ySpeed, 0, fieldRelative);
+                    setSwerve(m_period, xSpeed, ySpeed, 0, fieldRelative);
             }
     }
 
     //
-    public void setSwerve(Drivetrain drivetrain, double m_period, double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    public void setSwerve( double m_period, double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         double a =
         m_xspeedLimiter.calculate(MathUtil.applyDeadband(xSpeed, 0.03))
             * SwerveConstants.TOP_SPEED_METERS_PER_SEC
@@ -126,7 +134,29 @@ public class PathCommands {
     double c =
         m_rotLimiter.calculate(MathUtil.applyDeadband(rot, 0.04))
             * 1.4;
-        drivetrain.drive(a, b, c, fieldRelative, m_period);
+
+        System.out.println("aligning to tag");
+        System.out.println("setting swerve to drive");
+        System.out.println(a+" "+b+" "+c+" "+fieldRelative+" "+m_period);
+       // RobotContainer.getDrivetrain().drive(a, b, c, fieldRelative, m_period);
+        drivetrain_xSpeed=a;
+        drivetrain_ySpeed=b;
+        drivetrain_rot=c;
+        drivetrain_fieldRelative=fieldRelative;
+
+    }
+
+    public drivetrainValues getDrivetrainValues() {
+        return new drivetrainValues(drivetrain_xSpeed, drivetrain_ySpeed, 
+        drivetrain_rot, drivetrain_fieldRelative);
+    }
+
+
+
+    public void TestDrive()
+    {
+
+        RobotContainer.getDrivetrain().drive(1.0, 0, 0, true,0.02);
     }
 
     public boolean CloseEnough(Pose2d curPose, Pose2d targetPose) { // gotta be a better way 2 do this but again idfk
@@ -214,7 +244,7 @@ public class PathCommands {
                     System.out.println(drivetrain.getPose());
                     System.out.println(targetPose);
                     List<Double> values = CalcSwerveValues(drivetrain.getPose(), targetPose);
-                    setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+                    setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
             }).until(() -> CloseEnough(drivetrain.getPose(),targetPose))
         );
     }
@@ -224,7 +254,7 @@ public class PathCommands {
         return Commands.sequence(
             Commands.run(() -> {
                     List<Double> values = CalcSwerveValues(drivetrain.getPose(), targetPose);
-                    setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+                    setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
             }).until(() -> CloseEnough(drivetrain.getPose(),targetPose))
         );
     }
@@ -242,17 +272,17 @@ public class PathCommands {
         return Commands.sequence(
             Commands.run(() -> {
                     List<Double> values = CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0));
-                    setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+                    setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
             }).until(() -> CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
             //
             Commands.run(() -> {
                 List<Double> values = CalcSwerveValues(drivetrain.getPose(), targetPoses.get(1));
-                setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+                setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
             }).until(() -> CloseEnough(drivetrain.getPose(),targetPoses.get(1))),
 
             Commands.run(() -> {
                 List<Double> values = CalcSwerveValues(drivetrain.getPose(), targetPoses.get(2));
-                setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+                setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
             }).until(() -> CloseEnough(drivetrain.getPose(),targetPoses.get(2)))
         );
     }

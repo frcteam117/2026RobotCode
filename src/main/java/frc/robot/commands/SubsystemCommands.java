@@ -144,7 +144,6 @@ public class SubsystemCommands {
     public Command AlignToTag(Drivetrain drivetrain, Vision vision, PhotonCamera camera2, PathCommands pathCommands, Double m_period, Boolean fieldRelative) {
         return Commands.runOnce( () -> {
             pathCommands.AlignToTag(drivetrain, vision, camera2, m_period, fieldRelative);
-            System.out.println("aligning to tag");
         });
     }
     

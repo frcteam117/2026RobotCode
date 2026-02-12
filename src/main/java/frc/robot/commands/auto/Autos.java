@@ -57,7 +57,7 @@ public final class Autos {
         return Commands.sequence(
             Commands.run(() -> {
                     List<Double> values = pathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0));
-                    pathCommands.setSwerve(drivetrain, m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+                    pathCommands.setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
             }).until(() -> pathCommands.CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
             //
             Commands.run(() -> {
