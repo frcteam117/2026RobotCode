@@ -186,7 +186,6 @@ public class Robot extends TimedRobot {
    //drivetrain.manualDrive(m_controller.getLeftY(), m_controller.getRightX());
   }
 
-  public double getRobotPeriod() {
-    return getPeriod();
-  }
+ 
+  
 }

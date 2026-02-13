@@ -15,7 +15,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.commands.SubsystemCommands;
+import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
 
 public class Vision {
     //
@@ -37,10 +39,13 @@ public class Vision {
     public double targetRange = 0.0;
     public boolean targetVisible = false;
 
-    public Vision()  {
+    public Vision(Drivetrain drivetrain, PhotonCamera camera0, PhotonCamera camera2)  {
         AprilTagPoses = Arrays.asList();
         kPVision_Turn = -.03;
         targetYaw = (0.0);
+        RobotContainer.getDrivetrain().resetOdometry(
+            RobotContainer.getSubsystemCommands().
+            GetStartPoseFromVisibleAprilTags(camera0, camera2, drivetrain));
         //camera0 = new PhotonCamera("PC_Camera0");
         //camera2 = new PhotonCamera("PC_Camera2");
         //Rotation2d originRot = new Rotation2d(0);

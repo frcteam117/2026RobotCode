@@ -38,7 +38,7 @@ public class RobotContainer {
   //private final Indexer indexer = new Indexer();
   //private final Intake intake = new Intake();
   //private final Shooter shooter = new Shooter(); // make one for hood separate from shooter?
-  private static final Vision vision = new Vision();
+  public final Vision vision;// vision = new Vision(camera0,camera2,drivetrain);
 //  
   private static final PS5Controller m_controller = new PS5Controller(0);
   //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
@@ -105,6 +105,8 @@ public class RobotContainer {
     //camera0 = new PhotonCamera("PC_Camera0"); // needs callibrated
     //camera2 = new PhotonCamera("PC_Camera2");
     //
+    vision = new Vision(drivetrain,camera0,camera2);
+
     pathRunning = false;
     SmartDashboard.putBoolean("running Path1Command",true);
     kPVision_Turn = -.03;
@@ -206,5 +208,8 @@ public class RobotContainer {
   }
   public PathCommands getPathCommands() {
     return pathCommands;
+  }
+  public static SubsystemCommands getSubsystemCommands() {
+    return subsystemCommands;
   }
 }
