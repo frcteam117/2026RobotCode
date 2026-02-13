@@ -78,7 +78,7 @@ public final class Autos {
             Commands.run(() -> {
                 // run intake for 5 seconds (/fire 8 fuel)
             }).withTimeout(5)
-            // TODO NEXT: drive thru trench/over bump to get to nuetral zone, vary this here going thru dif sides
+            // TODO NEXT: drive thru trench/over bump to get to neutral zone, vary this here going thru dif sides
             //(make 2 autos branching from here)
             // - so we dont run into our alliance mates
         );

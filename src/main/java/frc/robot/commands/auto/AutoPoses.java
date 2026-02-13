@@ -12,7 +12,7 @@ import frc.robot.RobotContainer;
 
 public class AutoPoses {
     //
-    public static final List<Pose2d> AUTO1_POSE2DS = Arrays.asList(new Pose2d());
+    public static final List<Pose2d> AUTO1_POSE2DS = Arrays.asList();
     //===
     public static final Optional<Alliance> alliance = DriverStation.getAlliance();
     public static final String allianceColor = alliance.get().toString(); // check what this returns to see if its "Red"/"Blue"
