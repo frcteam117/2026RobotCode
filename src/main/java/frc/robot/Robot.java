@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
+import frc.robot.subsystems.ShooterSubsystem.Shooter;
 import frc.robot.subsystems.VisionSubsystem.Vision;
 import frc.robot.subsystems.VisionSubsystem.Vision.cameraData;
 import frc.robot.util.PathUtil;
@@ -60,8 +61,10 @@ public class Robot extends TimedRobot {
   RobotContainer robotContainer;
   PS5Controller m_controller;
   Drivetrain drivetrain;
+  Shooter shooter;
   Navx navX;
   PathCommands pathCommands;
+  SubsystemCommands subsystemCommands;
   PhotonCamera camera0;
   PhotonCamera camera2;
   Pose2d curPose;
@@ -83,9 +86,13 @@ public class Robot extends TimedRobot {
     m_controller = RobotContainer.getDriverController();
     drivetrain = RobotContainer.getDrivetrain();
     navX = RobotContainer.getGyro();
+
     camera2 = robotContainer.getCamera2();
     pathCommands = robotContainer.getPathCommands();
+    subsystemCommands = RobotContainer.getSubsystemCommands();
+    shooter = RobotContainer.getShooter();
   }
+
   @Override
   public void robotPeriodic() {
       // This runs in all robot modes (disabled, auto, teleop, test)
@@ -98,6 +105,12 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     driveWithJoystick(false);
     drivetrain.updateOdometry();
+  }
+
+
+  @Override
+  public void teleopInit() {
+    subsystemCommands.RunAdjustShooterForDistanceFromHub(shooter, pathCommands.getDistanceFromHub(drivetrain));
   }
 
   @Override

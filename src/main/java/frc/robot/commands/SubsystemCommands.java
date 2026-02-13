@@ -45,6 +45,7 @@ import frc.robot.subsystems.IntakeSubsystem.Intake;
 import frc.robot.subsystems.IntakeSubsystem.IntakeConstants;
 import frc.robot.subsystems.ShooterSubsystem.HoodConstants;
 import frc.robot.subsystems.ShooterSubsystem.Shooter;
+import frc.robot.subsystems.ShooterSubsystem.ShooterConstants;
 import frc.robot.subsystems.VisionSubsystem.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -151,9 +152,22 @@ public class SubsystemCommands {
     
     
     
-    /*
+    
     //=================================== // unclear is these will center here or stem from their individual subsystems?
-    // non-drivetrain subsystem commands:
+    //for now run this constantly, add different robot states later ^^
+    public Command RunAdjustShooterForDistanceFromHub(Shooter shooter, Double distanceFromHub) {
+        return Commands.run( () -> {
+            double dutyCycle = ShooterConstants.lerpTable.get(distanceFromHub);
+            shooter.setLeftShooterDutyCycle(dutyCycle);
+            shooter.setRightShooterDutyCycle(dutyCycle);
+        });
+    }
+    
+    
+    
+    
+    
+    /*// non-drivetrain subsystem commands:
     public static Command ExpandHopper() {
         return Commands.runOnce( () -> {
             hopperSubsystem.setAngle(HopperConstants.EXPANDED_ANGLE);

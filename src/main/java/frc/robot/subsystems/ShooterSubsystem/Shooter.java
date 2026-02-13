@@ -174,6 +174,7 @@ public class Shooter extends SubsystemBase
   public Command leftShooterSysId() {return leftShooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
   public Command rightShooterSysId() {return rightShooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
 
+
   @Override
   public void periodic() {
       leftShooter.updateTelemetry();

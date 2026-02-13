@@ -47,6 +47,7 @@ public class RobotContainer {
   //private final Robot robot = new Robot();
   private static final PathUtil pathUtil = new PathUtil();
   private static final SubsystemCommands subsystemCommands = new SubsystemCommands();
+  private static final Shooter shooter = new Shooter();
 
   //private final DrivetrainSubsystem m_swerve = SubsystemCommands.drivetrainSubsystem;//new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   private static final SwerveModuleSimulation swerveModuleSim = new SwerveModuleSimulation();
@@ -211,5 +212,8 @@ public class RobotContainer {
   }
   public static SubsystemCommands getSubsystemCommands() {
     return subsystemCommands;
+  }
+  public static Shooter getShooter() {
+    return shooter;
   }
 }

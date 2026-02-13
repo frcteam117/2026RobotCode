@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -92,12 +93,46 @@ public class PathCommands {
 
   public record drivetrainValues(double xSpeed, double ySpeed,double rot, boolean fieldRelative) {};
 
+    String allianceColor = "blue";
+    static Boolean alliancePresent = false;
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+
+    public PathCommands() {
+        if (alliance.isPresent()) {
+            alliancePresent = true;
+        } else {
+        }
+    }
 
 
     //Drivetrain m_swerve; // does this just work????????
     //
     //
     static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    //
+    //====
+    public Double getDistanceFromHub(Drivetrain drivetrain) {
+        double hubX = 0;
+        double hubY = 0;
+        if (alliancePresent) {
+            if (alliance.get() == Alliance.Blue) {
+                hubX = 4.666; // ADD CONSTANTS FILE WITH ALL THIS DATA LATER
+                hubY = 4;
+            }
+            else if (alliance.get() == Alliance.Red) {
+                hubX = 12; // ADD CONSTANTS FILE WITH ALL THIS DATA LATER
+                hubY = 4;
+            }
+        }
+        //Pose2d AllianceHubPosition = 
+        double xDistance = Math.abs(drivetrain.getPose().getX()-hubX);
+        double yDistance = Math.abs(drivetrain.getPose().getY()-hubY);
+        double distance = Math.sqrt((xDistance*xDistance)+(yDistance*yDistance)); // PYTHAGOREANS THEOREMMM (tho he def
+        //- didnt discover it firsttttt)
+        return distance;
+    }
+
+
     //
     public void AlignToTag(Drivetrain drivetrain, Vision vision, PhotonCamera camera2, Double m_period, Boolean fieldRelative) {
         //    change 2??? vvv
