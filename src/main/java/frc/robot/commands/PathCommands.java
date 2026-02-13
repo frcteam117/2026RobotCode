@@ -109,15 +109,16 @@ public class PathCommands {
             SmartDashboard.putString("cameraData",cameraData.toString()); // if targetRange > 2
             if (true && targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
                 SmartDashboard.putNumber("check #",2);
-                
-                double xSpeed =
-                    -m_xspeedLimiter.calculate(MathUtil.applyDeadband(targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
-                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC;
-                double ySpeed =
-                    -m_yspeedLimiter.calculate(MathUtil.applyDeadband(targetYaw * kPVision_Turn, 0.03))
-                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC;
+                double rot = -1.0 * targetYaw * kPVision_Turn * 5;//(SwerveConstants.TOP_SPEED_METERS_PER_SEC/0.6);//SwerveConstants.kMaxAngularSpeed;
+                // DONT USE 5.
+                double xSpeed = 0; // change from 0 for both???
+                    ///-m_xspeedLimiter.calculate(MathUtil.applyDeadband(targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
+                    //* SwerveConstants.TOP_SPEED_METERS_PER_SEC;
+                double ySpeed = 0;
+                    //-m_yspeedLimiter.calculate(MathUtil.applyDeadband(targetYaw * kPVision_Turn, 0.03))
+                   // * //SwerveConstants.TOP_SPEED_METERS_PER_SEC;
                     //SmartDashboard.putBoolean("setSwerve",true);
-                    setSwerve(m_period, xSpeed, ySpeed, 0, fieldRelative);
+                    setSwerve(m_period, xSpeed, ySpeed, rot, fieldRelative);
             }
     }
 
