@@ -21,7 +21,7 @@ public class AutoPoses {
         if (allianceColor == "Red") { // add all other auto poses in here as well?
             if (leftOrRight == "left") { // go to more decimal points?
                 if (trenchOrBump == "trench") {// red AZ, using left trench
-                    AUTO1_POSE2DS.add(new Pose2d(13.305,0.666, new Rotation2d()));
+                    AUTO1_POSE2DS.add(new Pose2d(13.305,0.6, new Rotation2d()));
                 }
                 else if (trenchOrBump == "bump") {// red AZ, using left bump
                     AUTO1_POSE2DS.add(new Pose2d(13.305,2.5, new Rotation2d())); // TODO: CONT. ADDING POSES

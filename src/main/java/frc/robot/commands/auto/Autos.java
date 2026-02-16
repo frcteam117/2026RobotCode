@@ -64,6 +64,11 @@ public final class Autos {
         for (int i = 0; i < AutoPoses.AUTO1_POSE2DS.size(); i++) {
             targetPoses.add(AutoPoses.AUTO1_POSE2DS.get(i));
         }
+        // TODO: CHANGE THIS TO BE IN AutoPoses.java !!!!!!!!!!
+        Pose2d newpose = new Pose2d(targetPoses.get(targetPoses.size()-1).getX()+5.035*offsetSign,
+        targetPoses.get(targetPoses.size()-1).getY(), new Rotation2d());
+        targetPoses.add(newpose);
+        targetPoses.add(new Pose2d(8.27,4,new Rotation2d()));
         //
 
         // DIFFERENTIATE THE AUTO HERE: ADD POSES FOR WHOLE AUTOS IN HERE vvv
@@ -71,16 +76,27 @@ public final class Autos {
         //========================================
         return Commands.sequence( //drive to hub (with offset)
             Commands.run(() -> {
-                    List<Double> values = pathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0)); // change 0
-                    pathCommands.setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+                List<Double> values = pathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0)); // change 0
+                pathCommands.setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
             }).until(() -> pathCommands.CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
             //
             Commands.run(() -> {
-                // run intake for 5 seconds (/fire 8 fuel)
+                // run shooter for 5 seconds (/fire 8 fuel)
+            }).withTimeout(5),
+            Commands.run(() -> { // go thru to neutral zone
+                List<Double> values = pathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(1)); // change 1
+                pathCommands.setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+            }).until(() -> pathCommands.CloseEnough(drivetrain.getPose(),targetPoses.get(1))),
+            Commands.run(() -> { // go to middle
+                List<Double> values = pathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(2)); // change 2
+                pathCommands.setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
+            }).until(() -> pathCommands.CloseEnough(drivetrain.getPose(),targetPoses.get(2))),
+            Commands.run(() -> {
+                // run intake for x seconds
             }).withTimeout(5)
-            // TODO NEXT: drive thru trench/over bump to get to neutral zone, vary this here going thru dif sides
-            //(make 2 autos branching from here)
-            // - so we dont run into our alliance mates
+            // next: go back thru to AZ, using reverse of previous poses!!!! / or maybe using next poses bc you go the other way?
+            // idk its an opportunity for more differeniation *CRIES*
+            
         );
     }
     //
