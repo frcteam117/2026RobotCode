@@ -84,45 +84,7 @@ public final class Autos {
         );
     }
     //
-    public Command Auto1Right(Drivetrain drivetrain, PathCommands pathCommands, Boolean fieldRelative, Double m_period, 
-    Robot robot, Double targetYaw) { // figure out how running this is gonna work,
-        // - you'll probably need to get rid of the parameters and have the Autos.java file
-        // - deal with it itself
-        int startGoalTagID = 0;
-        int offsetSign = 0;
-        double fromHubOffsetX = 2.5; // ADD THESE IN A CONSTANTS FILE TOO???
-        double fromHubOffsetY = 0.0; // ADD THESE IN A CONSTANTS FILE TOO???
-        if (alliance.get() == Alliance.Red) { // if on red side, add x,y,rot
-            startGoalTagID = 9; // or 10
-            offsetSign = 1;
-        }
-        else if (alliance.get() == Alliance.Blue) { // if on blue side, subtract x,y,rot
-            startGoalTagID = 25; // or 26
-            offsetSign = -1;
-        } // add error catcher for if no alliance?
-        // also: add something that determines whether 9/10 or 25/26 is better!!!!! or just have an
-        // -  auto for each
-        List<Pose2d> targetPoses = Arrays.asList(new Pose2d(
-            RobotContainer.AprilTagPoses.get(startGoalTagID).getX()+fromHubOffsetX*offsetSign, // go to a tag
-            RobotContainer.AprilTagPoses.get(startGoalTagID).getY()+fromHubOffsetY*offsetSign, // ADD OFFSETS FROM THIS!!!! maybe set their
-            //- -/+ sign when setting startGoalTagID
-            Rotation2d.fromDegrees(targetYaw) //does this need to be the difference of smth? idk
-        ));
-        return Commands.sequence( //drive to hub (with offset)
-            Commands.run(() -> {
-                    List<Double> values = pathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0));
-                    pathCommands.setSwerve( m_period, values.get(0), values.get(1), values.get(2),fieldRelative);
-            }).until(() -> pathCommands.CloseEnough(drivetrain.getPose(),targetPoses.get(0))),
-            //
-            Commands.run(() -> {
-                // run intake for 5 seconds (/fire 8 fuel)
-            }).withTimeout(5)
-            // TODO NEXT: drive thru trench/over bump to get to nuetral zone, vary this here going thru dif sides
-            //(make 2 autos branching from here)
-            // - so we dont run into our alliance mates
-        );
-    }
-    // only for aligning from in front of hub start, add differentiation! <---------
+        // only for aligning from in front of hub start, add differentiation! <---------
     /*public Command ShootThenClimbAuto(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, 
     Robot robot, Double targetYaw) {
         List<Pose2d> targetPoses = Arrays.asList(

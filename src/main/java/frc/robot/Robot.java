@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
     camera2 = robotContainer.getCamera2();
     pathCommands = robotContainer.getPathCommands();
     subsystemCommands = RobotContainer.getSubsystemCommands();
-    shooter = RobotContainer.getShooter();
+    //shooter = RobotContainer.getShooter();
   }
 
   @Override
@@ -110,7 +110,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    subsystemCommands.RunAdjustShooterForDistanceFromHub(shooter, pathCommands.getDistanceFromHub(drivetrain));
+    //subsystemCommands.RunAdjustShooterForDistanceFromHub(shooter, pathCommands.getDistanceFromHub(drivetrain));
   }
 
   @Override
