@@ -14,6 +14,7 @@ import com.studica.frc.AHRS.NavXComType;*/
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -33,10 +34,12 @@ import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.VisionSubsystem.cameraData;
 import frc.robot.util.PathUtil;
 import frc.robot.util.logging.LogUtil;
+import frc.robot.util.logging.TunableDouble;
 import edu.wpi.first.math.util.Units;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 import frc.robot.Swerve.SwerveModuleSimulation;
 //import frc.robot.subsystems.*;
@@ -52,6 +55,8 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.studica.frc.Navx;
 
 import org.photonvision.PhotonUtils;
@@ -71,9 +76,9 @@ public class Robot extends TimedRobot {
   //private final DrivetrainSubsystem m_swerve = SubsystemCommands.drivetrainSubsystem;//new DrivetrainSubsystem(() -> Rotation2d.fromDegrees(gyro.getYaw()), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   private final SwerveModuleSimulation swerveModuleSim = new SwerveModuleSimulation();
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(2);
-  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(2);
-  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(20);
+  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(4);
+  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(4);
+  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
     // 
   private Rotation2d zeroRotation = Rotation2d.kZero;
   public final PhotonCamera camera0; // needs callibrated
@@ -132,8 +137,10 @@ public class Robot extends TimedRobot {
     for (int i = 1; i < 33; i++) { // 33 because 32 tags, index 0 will return a safe Null
         Pose3d tagPose = kTagLayout.getTagPose(i).orElse(new Pose3d()); 
         SmartDashboard.putNumber("tagPose X",tagPose.getX());
-        //AprilTagPoses.add(tagPose);
-    }
+        //AprilTagPoses.add(tagPose); 
+    }  
+    rotPID.enableContinuousInput(0, 2*Math.PI);
+    LogUtil.createTunablePID("rotPID/", rotPID, () -> true);
     
     //
     
@@ -164,13 +171,13 @@ public class Robot extends TimedRobot {
     // curRot = curPose.getRotation();
 
     if (m_controller.getSquareButtonPressed()) {
-        navX.resetYaw();
+      navX.resetYaw();
     }
 
     if (m_controller.getCrossButton()) {
-        m_swerve.setX();
+      m_swerve.setX();
     } else {
-    driveWithJoystick(true);
+      driveWithJoystick(true);
     }
     //
     // if (m_controller.getCircleButton()) { // trigger pathCommands without cameras attached
@@ -193,94 +200,123 @@ public class Robot extends TimedRobot {
         m_swerve.updateSimModules();
   }
   //
+  private PIDController rotPID = new PIDController(4, 0, 0); 
+  private double rotTarget = 0.0;
+
   private void setSwerve(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
 
     double a =
-        m_xspeedLimiter.calculate(MathUtil.applyDeadband(xSpeed, 0.03))
+        m_xspeedLimiter.calculate(MathUtil.applyDeadband(xSpeed, 0.05))
             * SwerveConstants.TOP_SPEED_METERS_PER_SEC
             * 0.4;
     double b =
-        m_yspeedLimiter.calculate(MathUtil.applyDeadband(ySpeed, 0.03))
+        m_yspeedLimiter.calculate(MathUtil.applyDeadband(ySpeed, 0.05))
             * SwerveConstants.TOP_SPEED_METERS_PER_SEC
-            * 0.4;
-    double c =
-        m_rotLimiter.calculate(MathUtil.applyDeadband(rot, 0.04))
-            * 1.4;
+            * 0.4; 
+    double c = m_rotLimiter.calculate(MathUtil.applyDeadband(rot, 0.05))
+            * 2.7;
     m_swerve.drive(a, b, c, fieldRelative, getPeriod());
+
+    // runs pid on robot rotation
+    // rotTarget += -m_rotLimiter.calculate(MathUtil.applyDeadband(rot, 0.05))
+    //         * 3.4 * 0.02;
+    // SmartDashboard.putNumber("rotPID/target", rotTarget);
+    // SmartDashboard.putNumber("rotPID/measurement", m_swerve.getPose().getRotation().getRadians());
+    // m_swerve.drive(a, b, -rotPID.calculate(m_swerve.getPose().getRotation().getRadians(), rotTarget), fieldRelative, getPeriod());
   }
 
+  final DoubleSupplier intakeSpeed = new TunableDouble("IntakeSpeed", 0.1, () -> true);
+  final SparkMax intakeSpark = new SparkMax(10, MotorType.kBrushless);
+
   private void driveWithJoystick(boolean fieldRelative) {
+    if (m_controller.getR1Button()) {
+      intakeSpark.set(intakeSpeed.getAsDouble());
+    } else {
+      intakeSpark.set(0);
+    }
+
+
+
+
         //setSwerve(0,0,0, fieldRelative);
         //curCameraResults = visionSubsystem.getCameraResults();
-        if (m_controller.getCircleButton()) {
-            subsystemCommands.GetStartPoseFromVisibleAprilTags();
-        }
+        // if (m_controller.getCircleButton()) {
+        //     subsystemCommands.GetStartPoseFromVisibleAprilTags();
+        // }
 
-        if (m_controller.getTriangleButton()) {
-            SmartDashboard.putBoolean("triangle down", true);
-            SmartDashboard.putNumber("check #",0);
-        }
-        else {
-            SmartDashboard.putBoolean("triangle down", false);
-        }
-        SmartDashboard.putBoolean("target visible", targetVisible);
-        if (!targetVisible) {
-            //curAprilTagID = 0;
-        }
+        // if (m_controller.getTriangleButton()) {
+        //     SmartDashboard.putBoolean("triangle down", true);
+        //     SmartDashboard.putNumber("check #",0);
+        // }
+        // else {
+        //     SmartDashboard.putBoolean("triangle down", false);
+        // }
+        // SmartDashboard.putBoolean("target visible", targetVisible);
+        // if (!targetVisible) {
+        //     //curAprilTagID = 0;
+        // }
 
-        // Auto-align when requested
-        if (m_controller.getTriangleButton()) {
-            visionSubsystem.getCameraResults();
-            SmartDashboard.putNumber("check #",1);
-            fieldRelative = true;
+        // // Auto-align when requested
+        // if (m_controller.getTriangleButton()) {
+        //     visionSubsystem.getCameraResults();
+        //     SmartDashboard.putNumber("check #",1);
+        //     fieldRelative = true;
             
-            if (targetRange > 2 && targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
-                SmartDashboard.putNumber("check #",2);
-                SmartDashboard.putBoolean("aligning to tag",true);
-                double xSpeed =
-                    -m_xspeedLimiter.calculate(MathUtil.applyDeadband(targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
-                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC
-                    * 0.4;
-                double ySpeed =
-                    -m_yspeedLimiter.calculate(MathUtil.applyDeadband(targetYaw * kPVision_Turn, 0.03))
-                    * SwerveConstants.TOP_SPEED_METERS_PER_SEC
-                    * 0.4;
-                    //SmartDashboard.putBoolean("setSwerve",true);
-                    setSwerve(xSpeed, ySpeed, 0, fieldRelative); // should rot be rot not 0 here?
-            }
-            else { // if not aligning to target
-                //pathTimerStop = PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod()).pathTimerStops().get(curPathStep-1);
-                SmartDashboard.putNumber("check #",3);
-                if (targetVisible) {
-                    SmartDashboard.putNumber("check #",4);
-                    if (!pathRunning) { // start path
-                        SmartDashboard.putNumber("check #",5);
-                        Command command = pathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this, targetYaw); // is targetYaw right here?
-                        if (!command.isScheduled()) {
-                            System.out.println("command scheduled");
-                            command.schedule();
-                        }
-                        else {
-                            System.out.println("command already scheduled");
-                        }
-                        //PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this, targetYaw); // is targetYaw right here?
-                        pathRunning = true;
-                        //Command a = () -> curPathCommand.schedule();
-                        //curPathCommand = {() -> PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this)};
+        //     if (targetRange > 2 && targetVisible) { // reset the camera photonvision values so the targetrange stuff can be accurate?
+        //         SmartDashboard.putNumber("check #",2);
+        //         SmartDashboard.putBoolean("aligning to tag",true);
+        //         double xSpeed =
+        //             -m_xspeedLimiter.calculate(MathUtil.applyDeadband(targetRange * 0.5, 0.03)) // CONFIGURE STUFF SO U CAN TEST IF TS WORKS W/ SWERVE!!!!!
+        //             * SwerveConstants.TOP_SPEED_METERS_PER_SEC
+        //             * 0.4;
+        //         double ySpeed =
+        //             -m_yspeedLimiter.calculate(MathUtil.applyDeadband(targetYaw * kPVision_Turn, 0.03))
+        //             * SwerveConstants.TOP_SPEED_METERS_PER_SEC
+        //             * 0.4;
+        //             //SmartDashboard.putBoolean("setSwerve",true);
+        //             setSwerve(xSpeed, ySpeed, 0, fieldRelative); // should rot be rot not 0 here?
+        //     }
+        //     else { // if not aligning to target
+        //         //pathTimerStop = PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod()).pathTimerStops().get(curPathStep-1);
+        //         SmartDashboard.putNumber("check #",3);
+        //         if (targetVisible) {
+        //             SmartDashboard.putNumber("check #",4);
+        //             if (!pathRunning) { // start path
+        //                 SmartDashboard.putNumber("check #",5);
+        //                 Command command = pathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this, targetYaw); // is targetYaw right here?
+        //                 if (!command.isScheduled()) {
+        //                     System.out.println("command scheduled");
+        //                     command.schedule();
+        //                 }
+        //                 else {
+        //                     System.out.println("command already scheduled");
+        //                 }
+        //                 //PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this, targetYaw); // is targetYaw right here?
+        //                 pathRunning = true;
+        //                 //Command a = () -> curPathCommand.schedule();
+        //                 //curPathCommand = {() -> PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this)};
 
-                    }
-                }
-                else if (pathRunning) {
-                    //PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this, targetYaw); // is targetYaw right here?
-                }
-            }
-        }
-        else {
-            fieldRelative = true;
-            targetYaw = 0;
-            setSwerve(-m_controller.getLeftY(), -m_controller.getLeftX(), -m_controller.getRightX(), fieldRelative);
-            //curAprilTagID = 0;
-        }
+        //             }
+        //         }
+        //         else if (pathRunning) {
+        //             //PathUtil.getPathFromTagID(curAprilTagID, m_swerve, fieldRelative, getPeriod(), this, targetYaw); // is targetYaw right here?
+        //         }
+        //     }
+        // }
+        // else {
+  fieldRelative = true;
+  targetYaw = 0;
+
+
+
+
+  setSwerve(-m_controller.getLeftY(), -m_controller.getLeftX(), -m_controller.getRightX(), fieldRelative);
+
+
+
+
+  curAprilTagID = 0;
+        // }
                     
   }
   private void manualControl() {

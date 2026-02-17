@@ -88,10 +88,10 @@ public class SwerveModule {
         // FF = 1.0 / maxRevPerSec (for velocity control in rotations/sec)
         double estimatedMaxMps = SwerveConstants.TOP_SPEED_METERS_PER_SEC;
         double maxRevPerSec = estimatedMaxMps / (SwerveConstants.WHEEL_DIAMETER_METERS * Math.PI / SwerveConstants.DRIVE_GEAR_RATIO);
-        double P = 0.0042;
+        double P = 0.001;
         double I = 0.0;
         double D = 0.0;
-        double F = 1.0 / maxRevPerSec;
+        double F = 0.001;
         double allowableError = 0.0;
         double accumulatorCap = 0.0;
         m_driveMotor.pid0.setP(P).setI(I).setD(D).setFF(F);
@@ -115,7 +115,7 @@ public class SwerveModule {
      * Configure the azimuth motor based on encoder type
      */
     private void configureAzimuthMotor() {
-        double P = 0.07;
+        double P = 0.006;
         double I = 0.0;
         double D = 0.0;
         double F = 0.0;
