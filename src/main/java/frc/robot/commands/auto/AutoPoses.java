@@ -13,12 +13,15 @@ import frc.robot.RobotContainer;
 public class AutoPoses { // WILL THIS EVEN WORK IDFK
     // ALL THESE POSES ARE AFTER LINE UP AND 8 FUEL SHOOT
     //
-    public static final Pose2d RED_LEFT_TRENCH = (new Pose2d(13.305,0.6, new Rotation2d()));
-    public static final Pose2d RED_LEFT_BUMP = (new Pose2d(13.305,2.5, new Rotation2d()));
-    public static final Pose2d RED_RIGHT_TRENCH = (new Pose2d(13.305,7.389, new Rotation2d()));
-    public static final Pose2d RED_RIGHT_BUMP = (new Pose2d(13.305,5.525, new Rotation2d()));
+    public static final Pose2d RED_LEFT_TRENCH = new Pose2d(13.305,0.6, new Rotation2d());
+    public static final Pose2d RED_LEFT_BUMP = new Pose2d(13.305,2.5, new Rotation2d());
+    public static final Pose2d RED_RIGHT_TRENCH = new Pose2d(13.305,7.389, new Rotation2d());
+    public static final Pose2d RED_RIGHT_BUMP = new Pose2d(13.305,5.525, new Rotation2d());
     //public static final Pose2d RED_LEFT_TRENCH = (new Pose2d(13.305,0.6, new Rotation2d()));
     //public static final Pose2d RED_LEFT_TRENCH = (new Pose2d(13.305,0.6, new Rotation2d()));
+    public static final Pose2d NEUTRAL_CENTER = new Pose2d(8.27,4,new Rotation2d());
+
+
     //
     public static final List<Pose2d> AUTO1_POSE2DS = Arrays.asList();
     //===
@@ -52,6 +55,7 @@ public class AutoPoses { // WILL THIS EVEN WORK IDFK
             //- -/+ sign when setting startGoalTagID
             Rotation2d.fromDegrees(0) //does this need to be the difference of smth? idk
         ));
+         
         //==============================================
         // add error catcher for if no alliance?
         if (allianceColor == "Red") { // add all other auto poses in here as well?
@@ -90,6 +94,11 @@ public class AutoPoses { // WILL THIS EVEN WORK IDFK
                 }
             }
         }
+        AUTO1_POSE2DS.add(new Pose2d(AUTO1_POSE2DS.get(AUTO1_POSE2DS.size()-1).getX()+5.035*offsetSign,
+        AUTO1_POSE2DS.get(AUTO1_POSE2DS.size()-1).getY(), new Rotation2d()));
+        //targetPoses.add(newpose);
+        AUTO1_POSE2DS.add(NEUTRAL_CENTER);
+        //` 11111111
         
     }
 }
