@@ -37,43 +37,14 @@ public final class Autos {
     }
   //do we have to pass pathCommands? IDEFKATPBRO
   public Command Auto1(Drivetrain drivetrain, PathCommands pathCommands, Boolean fieldRelative, Double m_period, 
-    Robot robot, Double targetYaw, String leftOrRight, String trenchOrBump) { // figure out how running this is gonna work,
+    Robot robot, Double targetYaw) { // figure out how running this is gonna work,
         // - you'll probably need to get rid of the parameters and have the Autos.java file
         // - deal with it itself
-        int startGoalTagID = 0;
-        int offsetSign = 0;
-        double fromHubOffsetX = 2.5; // ADD THESE IN A CONSTANTS FILE TOO???
-        double fromHubOffsetY = 0.0; // ADD THESE IN A CONSTANTS FILE TOO???
-        if (alliance.get() == Alliance.Red) { // if on red side, add x,y,rot
-            startGoalTagID = 9; // or 10
-            offsetSign = 1;
-        }
-        else if (alliance.get() == Alliance.Blue) { // if on blue side, subtract x,y,rot
-            startGoalTagID = 25; // or 26
-            offsetSign = -1;
-        } // add error catcher for if no alliance?
-        // also: add something that determines whether 9/10 or 25/26 is better!!!!! or just have an
-        // -  auto for each
-
-        List<Pose2d> targetPoses = Arrays.asList(new Pose2d(
-            RobotContainer.AprilTagPoses.get(startGoalTagID).getX()+fromHubOffsetX*offsetSign, // go to a tag
-            RobotContainer.AprilTagPoses.get(startGoalTagID).getY()+fromHubOffsetY*offsetSign, // ADD OFFSETS FROM THIS!!!! maybe set their
-            //- -/+ sign when setting startGoalTagID
-            Rotation2d.fromDegrees(targetYaw) //does this need to be the difference of smth? idk
-        ));
-        for (int i = 0; i < AutoPoses.AUTO1_POSE2DS.size(); i++) {
-            targetPoses.add(AutoPoses.AUTO1_POSE2DS.get(i));
-        }
-        // TODO: CHANGE THIS TO BE IN AutoPoses.java !!!!!!!!!!
-        Pose2d newpose = new Pose2d(targetPoses.get(targetPoses.size()-1).getX()+5.035*offsetSign,
-        targetPoses.get(targetPoses.size()-1).getY(), new Rotation2d());
-        targetPoses.add(newpose);
-        targetPoses.add(new Pose2d(8.27,4,new Rotation2d()));
-        //
 
         // DIFFERENTIATE THE AUTO HERE: ADD POSES FOR WHOLE AUTOS IN HERE vvv
 
         //========================================
+        List<Pose2d> targetPoses = AutoPoses.AUTO1_POSE2DS;
         return Commands.sequence( //drive to hub (with offset)
             Commands.run(() -> {
                 List<Double> values = pathCommands.CalcSwerveValues(drivetrain.getPose(), targetPoses.get(0)); // change 0
