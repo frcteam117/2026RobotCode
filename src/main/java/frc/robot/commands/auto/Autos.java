@@ -17,14 +17,14 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.PathCommands;
 import frc.robot.commands.SubsystemCommands;
-import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
+import frc.robot.subsystems.Drivetrain.DrivetrainSubsystem;
 //
 public final class Autos {
     Pose2d robotStartPose;
     static Optional<Alliance> alliance;
     static Boolean alliancePresent = false;
     //
-    private Autos(Drivetrain drivetrain, SubsystemCommands subsystemCommands, PhotonCamera camera0, PhotonCamera camera2) {
+    private Autos(DrivetrainSubsystem drivetrain, SubsystemCommands subsystemCommands, PhotonCamera camera0, PhotonCamera camera2) {
     //throw new UnsupportedOperationException("don't use this dummy");
         robotStartPose = subsystemCommands.GetStartPoseFromVisibleAprilTags(camera0,camera2, drivetrain);
         drivetrain.resetOdometry(robotStartPose);
@@ -36,7 +36,7 @@ public final class Autos {
             }
     }
   //do we have to pass pathCommands? IDEFKATPBRO
-  public Command Auto1(Drivetrain drivetrain, PathCommands pathCommands, Boolean fieldRelative, Double m_period, 
+  public Command Auto1(DrivetrainSubsystem drivetrain, PathCommands pathCommands, Boolean fieldRelative, Double m_period, 
     Robot robot, Double targetYaw) { // figure out how running this is gonna work,
         // - you'll probably need to get rid of the parameters and have the Autos.java file
         // - deal with it itself

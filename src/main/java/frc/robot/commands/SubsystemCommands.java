@@ -38,15 +38,12 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Swerve.SwerveConstants;
-import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
-import frc.robot.subsystems.IndexerSubsystem.Indexer;
-import frc.robot.subsystems.IndexerSubsystem.IndexerConstants;
-import frc.robot.subsystems.IntakeSubsystem.Intake;
-import frc.robot.subsystems.IntakeSubsystem.IntakeConstants;
-import frc.robot.subsystems.ShooterSubsystem.HoodConstants;
-import frc.robot.subsystems.ShooterSubsystem.Shooter;
-import frc.robot.subsystems.ShooterSubsystem.ShooterConstants;
-import frc.robot.subsystems.VisionSubsystem.Vision;
+import frc.robot.subsystems.Drivetrain.DrivetrainSubsystem;
+import frc.robot.subsystems.Indexer.*;
+import frc.robot.subsystems.Shooter.HoodConstants;
+import frc.robot.subsystems.Shooter.ShooterSubsystem;
+import frc.robot.subsystems.Vision.VisionSubsystem;
+import frc.robot.subsystems.Shooter.ShooterConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 //
@@ -122,7 +119,7 @@ public class SubsystemCommands {
     public static Command BlankCommand() {
         return Commands.runOnce( () -> {});
     }
-    public static Command StopSwerve(Drivetrain drivetrain, Boolean fieldRelative, Double m_period) {
+    public static Command StopSwerve(DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period) {
         //Drivetrain m_swerve,
         return Commands.runOnce( () -> {
                 drivetrain.drive(0.0, 0.0, 0.0, fieldRelative, m_period); // add way to stop the robot?????
@@ -136,13 +133,13 @@ public class SubsystemCommands {
             System.out.println("reset Navx yaw");
         });
     }
-    public Command setDrivetrainX(Drivetrain drivetrain) {
+    public Command setDrivetrainX(DrivetrainSubsystem drivetrain) {
         return Commands.runOnce( () -> {
             drivetrain.setX();
             System.out.println("set drivetrain X");
         });
     }
-    public Command AlignToTag(Drivetrain drivetrain, Vision vision, PhotonCamera camera2, PathCommands pathCommands, Double m_period, Boolean fieldRelative) {
+    public Command AlignToTag(DrivetrainSubsystem drivetrain, VisionSubsystem vision, PhotonCamera camera2, PathCommands pathCommands, Double m_period, Boolean fieldRelative) {
         return Commands.runOnce( () -> {
             pathCommands.AlignToTag(drivetrain, vision, camera2, m_period, fieldRelative);
         });
@@ -155,7 +152,7 @@ public class SubsystemCommands {
     
     //=================================== // unclear is these will center here or stem from their individual subsystems?
     //for now run this constantly, add different robot states later ^^
-    public Command RunAdjustShooterForDistanceFromHub(Shooter shooter, Double distanceFromHub) {
+    public Command RunAdjustShooterForDistanceFromHub(ShooterSubsystem shooter, Double distanceFromHub) {
         return Commands.run( () -> {
             double dutyCycle = ShooterConstants.lerpTable.get(distanceFromHub);
             shooter.setLeftShooterDutyCycle(dutyCycle);
@@ -280,7 +277,7 @@ public class SubsystemCommands {
     //===
     */
     // ADJUST FOR CAMERA POSITION. CHECK WHICH CAMERA AND ADD OFFSET FOR CAMERA POSEs!!!!!
-    public Pose2d GetStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2, Drivetrain drivetrain){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
+    public Pose2d GetStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2, DrivetrainSubsystem drivetrain){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         // change to be for any point in game by making it dependent on the alliance side if
         // - at start and the odometry robot pose at any other point???
         var results = Arrays.asList(camera0.getAllUnreadResults(),camera2.getAllUnreadResults());
@@ -365,7 +362,7 @@ public class SubsystemCommands {
             return null;
         }
     }
-    public Command LogStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2, Drivetrain drivetrain){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
+    public Command LogStartPoseFromVisibleAprilTags(PhotonCamera camera0, PhotonCamera camera2, DrivetrainSubsystem drivetrain){//List<List<PhotonPipelineResult>> results) { // (only from start for now)
         // change to be for any point in game by making it dependent on the alliance side if
         // - at start and the odometry robot pose at any other point???
         //System.out.println(17171717);
@@ -459,5 +456,14 @@ public class SubsystemCommands {
         }});
     }
     //
+
+    //
+    public Command ExampleSequence(){
+        return Commands.sequence(
+            Commands.run(() -> {
+
+            })
+        );
+    }
 
 }

@@ -26,19 +26,19 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Swerve.SwerveConstants;
 import frc.robot.Swerve.SwerveModuleSimulation;
 import frc.robot.commands.*;
-import frc.robot.subsystems.DrivetrainSubsystem.*;
-import frc.robot.subsystems.IndexerSubsystem.*;
-import frc.robot.subsystems.IntakeSubsystem.*;
-import frc.robot.subsystems.ShooterSubsystem.*;
-import frc.robot.subsystems.VisionSubsystem.*;
+import frc.robot.subsystems.Drivetrain.*;
+import frc.robot.subsystems.Indexer.*;
+import frc.robot.subsystems.Intake.*;
+import frc.robot.subsystems.Shooter.*;
+import frc.robot.subsystems.Vision.*;
 import frc.robot.util.PathUtil;
 public class RobotContainer {
   private static final Navx navX = new Navx(0, 100); // rate in Hz
-  private static final Drivetrain drivetrain = new Drivetrain(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
+  private static final DrivetrainSubsystem drivetrain = new DrivetrainSubsystem(() -> navX.getRotation2d().unaryMinus(), new Pose2d());  // private final SimDrivetrain m_simSwerve = new SimDrivetrain(new Pose2d());
   //private final Indexer indexer = new Indexer();
   //private final Intake intake = new Intake();
   //private final Shooter shooter = new Shooter(); // make one for hood separate from shooter?
-  public final Vision vision;// vision = new Vision(camera0,camera2,drivetrain);
+  public final VisionSubsystem vision;// vision = new Vision(camera0,camera2,drivetrain);
 //  
   private static final PS5Controller m_controller = new PS5Controller(0);
   //navX.enableOptionalMessages(true, false, false, false, false, false, false, false, false);
@@ -106,7 +106,7 @@ public class RobotContainer {
     //camera0 = new PhotonCamera("PC_Camera0"); // needs callibrated
     //camera2 = new PhotonCamera("PC_Camera2");
     //
-    vision = new Vision(drivetrain,camera0,camera2);
+    vision = new VisionSubsystem(drivetrain,camera0,camera2);
 
     pathRunning = false;
     SmartDashboard.putBoolean("running Path1Command",true);
@@ -178,7 +178,7 @@ public class RobotContainer {
               final var rot =
                   -m_rotLimiter.calculate(
                           MathUtil.applyDeadband(m_controller.getRightX(), 0.05))
-                      * Drivetrain.kMaxAngularSpeed;
+                      * DrivetrainSubsystem.kMaxAngularSpeed;
 
               // Command the drivetrain. 0.02 is the nominal TimedRobot loop period (20 ms).
               drivetrain.drive(xSpeed, ySpeed, rot, true, 0.02);
@@ -194,7 +194,7 @@ public class RobotContainer {
   }
 
   // Optional: expose drivetrain / controller if you need them elsewhere
-  public static Drivetrain getDrivetrain() {
+  public static DrivetrainSubsystem getDrivetrain() {
     return drivetrain;
   }
 

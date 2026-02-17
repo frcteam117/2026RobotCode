@@ -1,4 +1,4 @@
-package frc.robot.subsystems.VisionSubsystem;
+package frc.robot.subsystems.Vision;
 
 public class VisionConstants {
     // add camera position offsets for pose estimation once teh cameras have been placed?? 

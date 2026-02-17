@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.DrivetrainSubsystem;
+package frc.robot.subsystems.Drivetrain;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Represents a swerve drive style drivetrain. */
-public class Drivetrain extends SubsystemBase {
+public class DrivetrainSubsystem extends SubsystemBase {
     public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
     private final SwerveModule m_frontLeft = new SwerveModule(
@@ -87,7 +87,7 @@ public class Drivetrain extends SubsystemBase {
      *                     as Rotation2d
      * @param initialPose  The initial pose of the robot
      */
-    public Drivetrain(Supplier<Rotation2d> gyroSupplier, Pose2d initialPose) {
+    public DrivetrainSubsystem(Supplier<Rotation2d> gyroSupplier, Pose2d initialPose) {
         this.m_gyroSupplier = gyroSupplier;
 
         m_odometry = new SwerveDriveOdometry(

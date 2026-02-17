@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 //import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.commands.*;
-import frc.robot.subsystems.DrivetrainSubsystem.Drivetrain;
+import frc.robot.subsystems.Drivetrain.DrivetrainSubsystem;
 import frc.robot.Robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -36,7 +36,7 @@ public class PathUtil {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   public PathUtil() {}
   
-  public Command getPathFromTagID(int aprilTagID, PathCommands pathCommands, Drivetrain drivetrain, Boolean fieldRelative, Double m_period, Robot robot, double targetYaw) {
+  public Command getPathFromTagID(int aprilTagID, PathCommands pathCommands, DrivetrainSubsystem drivetrain, Boolean fieldRelative, Double m_period, Robot robot, double targetYaw) {
     // commands for each tag: // use fieldRelative to determine if it should be fieldRelative or just offSet!!!!!!!!!
     if (aprilTagID == 0) {
       return pathCommands.BlankCommand();
